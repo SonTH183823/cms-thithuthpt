@@ -1,0 +1,31 @@
+@import "element-variables";
+
+.page-content {
+  padding: 20px;
+}
+
+.btn-tac-vu {
+  width: 32px;
+  height: 28px;
+  font-size: 14px;
+}
+
+.edit-btn {
+  color: $--color-primary !important;
+  border: 1px solid $--color-primary !important;
+
+  &:hover {
+    background: $--color-primary !important;
+    color: #fff !important;
+  }
+}
+
+.delete-btn {
+  color: #f56c6c !important;
+  border: 1px solid #f56c6c !important;
+
+  &:hover {
+    background: #f56c6c !important;
+    color: #fff !important;
+  }
+}

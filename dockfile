@@ -1,0 +1,23 @@
+FROM node:16-alpine as build-stage
+WORKDIR /app
+COPY package*.json ./
+RUN yarn
+COPY . .
+ENV VUE_APP_AUTH_API=https://tc-api.carpla.vn/cms-authorization
+ENV VUE_APP_UPLOAD_API=https://images-cdn.carpla.dev
+ENV VUE_APP_DECORATE_API=https://tc-api.carpla.vn/cms-decorate
+ENV VUE_APP_NEWS_API=https://tc-api.carpla.vn/cms-news
+ENV VUE_APP_PARTNER_API=https://tc-api.carpla.vn/cms-decorate
+ENV VUE_APP_CAR=https://tc-api.carpla.vn/car
+ENV VUE_APP_USER_TRANSACTION=https://tc-api.carpla.vn/user-transaction
+ENV VUE_APP_CUSTOMER_API=https://tc-api.carpla.vn/customer
+ENV VUE_APP_FAQ=https://tc-api.carpla.vn/faqs
+ENV VUE_APP_RECRUITMENT=https://tc-api.carpla.vn/recruit
+ENV VUE_APP_MINIO=https://tc-api.carpla.vn/uploadminio
+ENV VUE_APP_SEO_API=https://tc-api.carpla.vn/seo
+RUN yarn build:prod
+
+FROM nginx as production-stage
+RUN mkdir /app
+COPY --from=build-stage /app/dist /app
+COPY nginx.conf /etc/nginx/nginx.conf
