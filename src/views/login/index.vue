@@ -9,12 +9,12 @@
       label-position="left">
 
       <div class="title-container">
-        <svg-icon class="logo" icon-class="LogoCARPLA" />
+        <img src="@/assets/images/logo-full.png" alt="" class="logo"/>
       </div>
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <svg-icon icon-class="user" />
+          <svg-icon icon-class="user"/>
         </span>
         <el-input
           ref="username"
@@ -29,7 +29,7 @@
 
       <el-form-item prop="password">
         <span class="svg-container">
-          <svg-icon icon-class="password" />
+          <svg-icon icon-class="password"/>
         </span>
         <el-input
           :key="passwordType"
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
+import {validUsername} from '@/utils/validate'
 import defaultSettings from '@/settings'
 import UserAPI from "@/api/auth/user"
 
@@ -88,8 +88,8 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [{required: true, trigger: 'blur', validator: validateUsername}],
+        password: [{required: true, trigger: 'blur', validator: validatePassword}]
       },
       loading: false,
       passwordType: 'password',
@@ -98,7 +98,7 @@ export default {
   },
   watch: {
     $route: {
-      handler: function(route) {
+      handler: function (route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
@@ -120,7 +120,7 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+            this.$router.push({path: this.redirect || '/'})
             this.loading = false
           }).catch(() => {
             this.loading = false
@@ -151,9 +151,16 @@ $cursor: #fff;
   }
 }
 
+.logo {
+  object-fit: cover;
+  height: fit-content;
+  max-height: 100px;
+  margin-bottom: 20px;
+  width: 75%;
+}
+
 /* reset element-ui css */
 .login-container {
-  //background-image: linear-gradient(-225deg, #7DE2FC 0%, #B9B6E5 100%);
   .logo {
     width: 250px;
     height: 200px;
@@ -214,11 +221,11 @@ $cursor: #fff;
     width: 520px;
     max-width: 100%;
     padding: 20px 35px 0;
-    margin: 10vh auto 0;
+    margin: 20vh auto 0;
     overflow: hidden;
     background: #fff;
     border-radius: 5px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
   }
 
   .tips {

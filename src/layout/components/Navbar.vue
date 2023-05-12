@@ -367,7 +367,7 @@ export default {
   padding-top: 5px;
 
   &:hover {
-    background: #0A9F46;
+    background: #02967D;
   }
 }
 

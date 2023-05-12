@@ -6,8 +6,9 @@
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <h1 class="sidebar-title">
-          <svg-icon class-name="sidebar-logo" icon-class="LogoCARPLA" />
-          {{ title }}
+<!--          <svg-icon class-name="sidebar-logo" icon-class="logo123" />-->
+<!--          {{ title }}-->
+          <img src="@/assets/images/logo-full.png" alt="" class="logo"/>
         </h1>
       </router-link>
     </transition>
@@ -33,6 +34,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.logo {
+  object-fit: cover;
+  height: fit-content;
+  width: 75%;
+}
 .sidebarLogoFade-enter-active {
   transition: opacity 1.5s;
 }
