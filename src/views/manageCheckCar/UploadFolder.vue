@@ -3,7 +3,7 @@
     <el-row>
       <div style="display: flex; flex-direction: row; align-items: center">
         <div style="display: flex; flex-direction: row; align-items: center">
-          <a href="/TechnicalPoints.zip" target="_blank" class="btnTmp">Mẫu</a>
+          <a href="/" target="_blank" class="btnTmp">Mẫu</a>
           <input id="folder" type="file" webkitdirectory :disabled="loading" @change="folderChange"/>
           <label for="folder">
             <img src="../../assets/images/cloud-computing.png" alt=""/>

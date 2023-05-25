@@ -1,15 +1,8 @@
 <template>
-  <div class="sidebar-logo-container" :class="{'collapse':collapse}">
+  <div class="sidebar-logo-container">
     <transition name="sidebarLogoFade">
-      <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <svg-icon class-name="sidebar-logo" icon-class="LogoCARPLA" />
-      </router-link>
-      <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <h1 class="sidebar-title">
-<!--          <svg-icon class-name="sidebar-logo" icon-class="logo123" />-->
-<!--          {{ title }}-->
-          <img src="@/assets/images/logo-full.png" alt="" class="logo"/>
-        </h1>
+      <router-link key="expand" class="sidebar-logo-link" to="/">
+        <img src="@/assets/images/logo-full.png" alt="" class="logo"/>
       </router-link>
     </transition>
   </div>
@@ -39,6 +32,7 @@ export default {
   height: fit-content;
   width: 75%;
 }
+
 .sidebarLogoFade-enter-active {
   transition: opacity 1.5s;
 }

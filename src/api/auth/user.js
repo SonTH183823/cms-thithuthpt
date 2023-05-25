@@ -39,7 +39,7 @@ const UserAPI = {
   },
   login(data) {
     return request({
-      url: `${config.api.user}/login`,
+      url: `${config.api.auth}/login`,
       method: 'post',
       data
     })
