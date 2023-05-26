@@ -24,7 +24,7 @@ const baseRouter = [
   },
   {
     path: '/', component: Layout, children: [{
-      path: '/nguoi-dung',
+      path: '/nguoi-dung-cms',
       name: 'Người dùng cms',
       component: () => import('@/views/system/user/index'),
       meta: {title: 'Người dùng CMS', icon: 'user', authorize: [config.roleConfig.ADMIN]},
@@ -113,7 +113,15 @@ const baseRouter = [
       component: () => import('@/views/manageIntro/index'),
       meta: {title: 'Quản lý giới thiệu', icon: 'lead_buy', authorize: [config.roleConfig.INTRODUCTION]},
     }]
-  }
+  },
+  {
+    path: '/', component: Layout, children: [{
+      path: '/nguoi-dung',
+      name: 'Người dùng Website',
+      component: () => import('@/views/manageUser/index'),
+      meta: {title: 'Người dùng Website', icon: 'user', authorize: [config.roleConfig.ADMIN]},
+    }]
+  },
 ]
 
 function genRouterList() {

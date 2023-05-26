@@ -73,7 +73,7 @@
             align="center" label="Tác vụ" width="300" fixed="right"
           >
             <template slot-scope="scope">
-              <el-tooltip content="Sửa" placement="bottom">
+              <el-tooltip content="Ghi chú" placement="left">
                 <el-button
                   type="primary"
                   size="mini"
@@ -83,37 +83,9 @@
                   <i class="el-icon-edit"/>
                 </el-button>
               </el-tooltip>
-              <el-tooltip content="Quản lý phiên" placement="top">
-                <el-button
-                  style="background-color: #20a0ff; border: none"
-                  size="mini"
-                  plain
-                  @click="handleSession(scope.row.uid)"
-                >
-                  <i class="el-icon-time" style="color: white"/>
-                </el-button>
-              </el-tooltip>
-              <el-tooltip content="Lịch sử" placement="bottom">
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="handleViewHistory(scope.row.uid)"
-                >
-                  <i class="el-icon-warning"/>
-                </el-button>
-              </el-tooltip>
-              <el-tooltip content="Đơn mua/bán" placement="top">
-                <el-button
-                  type="warning"
-                  size="mini"
-                  @click="handleViewDetails(scope.row.uid)"
-                >
-                  <i class="el-icon-view"/>
-                </el-button>
-              </el-tooltip>
-              <el-tooltip v-if="!scope.row.isLocked" content="Chặn" placement="bottom">
+              <el-tooltip v-if="!scope.row.isLocked" content="Chặn" placement="top">
                 <el-popconfirm
-                  style="margin-left: 5px; margin-right: 5px"
+                  style="margin-left: 5px;"
                   confirm-button-text="Đồng ý"
                   cancel-button-text="Hủy"
                   title="Chặn người dùng?"
@@ -121,20 +93,37 @@
                 >
                   <el-button
                     slot="reference"
-                    type="danger"
+                    type="warning"
                     size="mini"
                     icon="el-icon-lock"
                   />
                 </el-popconfirm>
               </el-tooltip>
-              <el-tooltip v-else content="Bỏ chặn" placement="bottom">
+              <el-tooltip v-else content="Bỏ chặn" placement="top">
                 <el-button
+                  style="margin-left: 5px;"
                   type="info"
                   size="mini"
                   @click="handleBlock(scope.row)"
                 >
                   <i class="el-icon-unlock"/>
                 </el-button>
+              </el-tooltip>
+              <el-tooltip content="Xóa" placement="right">
+                <el-popconfirm
+                  style="margin-left: 5px"
+                  confirm-button-text="Đồng ý"
+                  cancel-button-text="Hủy"
+                  title="Bạn có chắc chắn xóa?"
+                  @onConfirm="handleDel(scope.row)"
+                >
+                  <el-button
+                    slot="reference"
+                    type="danger"
+                    size="mini"
+                    icon="el-icon-delete"
+                  />
+                </el-popconfirm>
               </el-tooltip>
             </template>
           </el-table-column>
@@ -206,15 +195,6 @@ export default {
       this.form = { ...prams }
       this.dialogFormVisible = true
     },
-    async handleViewDetails(uid) {
-      this.$router.push({ path: '/quan-ly-khach-hang/nguoi-dung/' + uid, params: { uid: uid } })
-    },
-    async handleViewHistory(uid) {
-      this.$router.push({ path: '/quan-ly-khach-hang/lich-su/' + uid, params: { uid: uid } })
-    },
-    handleSession(uid) {
-      this.$router.push({ path: '/quan-ly-khach-hang/phien/' + uid, params: { uid: uid } })
-    },
     async handleBlock(user) {
       const dt = {
         isLocked: user.isLocked === 1 ? 0 : 1
@@ -225,6 +205,10 @@ export default {
     handleCancel() {
       this.dialogFormVisible = false
       this.form = {}
+    },
+    async handleDel(user) {
+      await UserAPI.deleteUer(user.uid)
+      this.$refs.tableData.refreshData()
     },
     async handleSubmit() {
       const data = {

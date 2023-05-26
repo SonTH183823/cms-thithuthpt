@@ -2,11 +2,11 @@ import request from '@/utils/request'
 import config from '@/utils/config'
 import queryString from "query-string"
 
-const URLUser = config.api.domainUser
+const URLUser = config.api.domain
 
 const UserAPI = {
   getURLUser() {
-    return `${URLUser}/cms/user`
+    return `${URLUser}/allUsers`
   },
   get(params = {}) {
     return request({
@@ -23,24 +23,15 @@ const UserAPI = {
   },
   blockUser(data, uid) {
     return request({
-      url: `${URLUser}/cms/user/block/${uid}`,
+      url: `${URLUser}/usersById/${uid}`,
       method: 'put',
       data
     })
   },
-  getSessionUserAPI(uid) {
-    return `${URLUser}/cms/user/session/${uid}`
-  },
-  deleteAllUserSession(uid) {
+  deleteUer(id) {
     return request({
-      url: `${URLUser}/cms/user/session/${uid}`,
-      method: 'delete',
-    })
-  },
-  deleteUserSession(uid, id) {
-    return request({
-      url: `${URLUser}/cms/user/session/${uid}/${id}`,
-      method: 'delete',
+      url: `${URLUser}/users/${id}`,
+      method: 'delete'
     })
   }
 }
