@@ -3,7 +3,6 @@ import config from '@/utils/config'
 import queryString from "query-string"
 
 const URLUser = config.api.domainUser
-const URLList = config.api.userTransaction
 
 const UserAPI = {
   getURLUser() {
@@ -21,33 +20,6 @@ const UserAPI = {
       method: 'put',
       data
     })
-  },
-  getListSellCar(uid) {
-    return request({
-      url: `${URLList}/sellCar?uid=${uid}`,
-      method: 'get',
-    })
-  },
-  APIGetListSellCar(uid) {
-    return `${URLList}/sellCar?uid=${uid}`
-  },
-  getListBuyer(uid) {
-    return request({
-      url: `${URLList}/lead?uid=${uid}`,
-      method: 'get',
-    })
-  },
-  delListBuyer(uid, id) {
-    return request({
-      url: `${URLList}/lead?uid=${uid}/${id}`,
-      method: 'delete',
-    })
-  },
-  APIGetListBuyer(uid) {
-    return `${URLList}/lead?uid=${uid}`
-  },
-  getHistoryUserAPI(uid) {
-    return `${URLUser}/cms/user/history/${uid}?limit=20`
   },
   blockUser(data, uid) {
     return request({

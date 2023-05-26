@@ -71,6 +71,7 @@
                 @click="handleUpdate(val.row)"
               />
               <el-popconfirm
+                v-if="val.row.username !== 'admin'"
                 style="margin-left: 5px"
                 confirm-button-text="Đồng ý"
                 cancel-button-text="Hủy"
@@ -101,7 +102,7 @@
 <script>
 import TablePagination from '@/components/TablePagination/index'
 import NguoiDungForm from './detail/index'
-import { handleSearchInTable, parseTime } from '@/utils'
+import {handleSearchInTable, parseTime} from '@/utils'
 import config from '@/utils/config'
 import SearchColumn from '@/components/SearchColumn/index'
 import UserAPI from '@/api/auth/user'
@@ -159,7 +160,7 @@ export default {
     // Thêm mới
     async handleCreate() {
       this.formType = 'create'
-      this.formValue = { status: 1, avatar: '' }
+      this.formValue = {status: 1, avatar: ''}
       this.$refs.form.$refs.dialog.updateShowDialog(true)
     },
 
@@ -167,11 +168,7 @@ export default {
     async handleUpdate(row) {
       this.formType = 'edit'
       const res = await UserAPI.getById(row._id)
-      this.formValue = {
-        ...res,
-        roles: res.roles.map(role => role._id),
-        birthday: new Date(row.birthday * 1000)
-      }
+      this.formValue = {...res}
       this.$refs.form.$refs.dialog.updateShowDialog(true)
     },
 

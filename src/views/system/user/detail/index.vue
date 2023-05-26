@@ -6,25 +6,12 @@
     @parrent-callback="callbackFromChild"
   >
     <el-form ref="form" :model="form" :rules="rulesCreate">
-<!--      <div class="avatar-wrap">-->
-<!--        <el-upload-->
-<!--          class="avatar-uploader"-->
-<!--          :action="urlUploadImage"-->
-<!--          :show-file-list="false"-->
-<!--          :auto-upload="true"-->
-<!--          :on-success="onUploadAvatarSuccess"-->
-<!--        >-->
-<!--          <img v-if="form.avatar" :src="form.avatar" class="avatar" alt="thumbnails">-->
-<!--          <i v-else class="el-icon-user-solid avatar-blank"/>-->
-<!--          <i class="el-icon-edit-outline avatar-uploader-icon"/>-->
-<!--        </el-upload>-->
-<!--      </div>-->
       <el-form-item
         label="Tên đăng nhập"
         :label-width="formLabelWidth"
         prop="username"
       >
-        <el-input v-model="form.username" autocomplete="off"/>
+        <el-input :disabled="form.username === 'admin'" v-model="form.username" autocomplete="off"/>
       </el-form-item>
       <el-form-item
         label="Họ và tên"
@@ -33,33 +20,32 @@
       >
         <el-input v-model="form.name" autocomplete="off"/>
       </el-form-item>
-      <el-form-item label="Quản trị viên" prop="isAdministrator" :label-width="formLabelWidth">
+      <el-form-item v-if="form.username !== 'admin'" label="Quản trị viên" prop="isAdministrator"
+                    :label-width="formLabelWidth">
         <el-switch v-model="form.isAdministrator" :active-value="1" :inactive-value="0"/>
       </el-form-item>
       <el-form-item
+        v-if="!form.isAdministrator"
         label="Quyền"
         :label-width="formLabelWidth"
         prop="roles"
-        v-if="!form.isAdministrator"
       >
         <el-select v-model="form.roles" placeholder="Chọn" multiple>
           <el-option
-            v-for="item in loaiNguoiDungMap"
-            :key="item._id"
-            :label="item.title"
-            :value="item._id"
-          >
-          </el-option>
+            v-for="item in config.roleConfigMap"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
       </el-form-item>
 
       <el-checkbox
         v-if="formType === 'edit'"
         v-model="checked"
-        style="margin: 0px 0px 35px 15px"
+        style="margin: 0 0 35px 15px"
       >
-        <h2 style="margin:0px 0px 35px 30px; color: #606266">Thay đổi mật khẩu
-        </h2>
+        <h3 style="margin:0 ; color: #606266; font-weight: bold">Thay đổi mật khẩu</h3>
       </el-checkbox>
       <div v-if="checked">
         <el-form-item
@@ -71,7 +57,7 @@
             v-model="form.password"
             type="password"
             autocomplete="off"
-          ></el-input>
+          />
         </el-form-item>
         <el-form-item
           label="Xác nhận mật khẩu"
@@ -82,7 +68,7 @@
             v-model="form.checkPass"
             type="password"
             autocomplete="off"
-          ></el-input>
+          />
         </el-form-item>
       </div>
     </el-form>
@@ -92,8 +78,6 @@
 <script>
 import TlDialog from '@/components/TlDialog/index'
 import config from '@/utils/config'
-import moment from 'moment'
-import roleAPI from '@/api/auth/role'
 import UserAPI from '@/api/auth/user'
 
 export default {
@@ -104,7 +88,7 @@ export default {
   props: ['formvalue', 'formType'],
 
   data(props) {
-    let validatePass2 = (rule, value, callback) => {
+    const validatePass2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('Yêu cầu nhập lại mật khẩu'))
       } else if (value !== this.form.password) {
@@ -115,31 +99,19 @@ export default {
     }
     return {
       config,
-      urlUploadImage: `${config.api.upload}`,
-      genderMap: Object.entries(config.genderMap),
-      userList: [],
       loadingUser: false,
-      loaiNguoiDungMap: [],
-      donVis: [],
-      chucVus: [],
-      capBacs: [],
-      phongBans: [],
-      category: config.taxonomyType,
       loadingCategory: false,
       checked: props.formType !== 'edit',
       defaultForm: {
         name: '',
-        username: '',
-        birthday: Date.now(),
-        assignPer: 1
+        username: ''
       },
       form: this.formvalue
-        ? { ...this.formvalue }
+        ? {...this.formvalue}
         : {
           name: '',
           username: '',
-          birthday: Date.now(),
-          assignPer: 1,
+          roles: [],
           isAdministrator: 0
         },
       formLabelWidth: '150px',
@@ -159,101 +131,33 @@ export default {
           },
         ],
         checkPass: [
-          { required: true, validator: validatePass2, trigger: 'blur' },
-        ],
-        unit: [
-          {
-            required: true,
-            message: 'Yêu cầu chọn đơn vị',
-            trigger: 'blur',
-          },
+          {required: true, validator: validatePass2, trigger: 'blur'},
         ],
         roles: [
-          // {
-          //   required: true,
-          //   message: 'Yêu cầu chọn quyền',
-          //   trigger: 'blur',
-          // },
-        ],
-        roleEmail: [
           {
             required: true,
-            message: 'Yêu cầu chọn vai trò',
-            trigger: 'blur',
-          },
-        ],
-        phongBan: [
-          {
-            required: true,
-            message: 'Yêu cầu chọn phòng ban',
+            message: 'Yêu cầu chọn quyền',
             trigger: 'blur',
           },
         ],
       },
     }
   },
-
   watch: {
     formvalue(newValue) {
       if (newValue) {
-        this.form = { ...newValue }
+        this.form = {...newValue}
         this.checked = !newValue._id
       } else {
-        this.form = { ...this.defaultForm }
+        this.form = {...this.defaultForm}
         this.checked = true
       }
     },
   },
-
-  created() {
-    this.getRoles()
-    this.getUsers()
+  mounted() {
+    console.log(this.formvalue.roles)
   },
   methods: {
-    async handleSearchUser(query) {
-      const list = this.userList
-
-      if(query !== '') {
-        this.loadingUser = true
-        try {
-          const byName = await UserAPI.get({ name: query })
-
-          if(byName?.data?.length > 0) {
-            this.userList = byName.data
-          } else {
-            const byUsername = await UserAPI.get({ username: query })
-            this.userList = byUsername.data
-          }
-
-          this.loadingUser = false
-        } catch (err) {
-          console.log(err)
-          this.loadingUser = false
-        }
-      } else {
-        const res = await UserAPI.get({ perPage: 100 })
-        this.userList = res.data
-      }
-    },
-    async getUsers() {
-      const res = await UserAPI.get()
-      this.userList = res.data
-    },
-    async getRoles() {
-      const res = await roleAPI.get({ perPage: 1000 })
-      this.loaiNguoiDungMap = res.data
-    },
-    async onUploadAvatarSuccess(res) {
-      if (res) {
-        this.form.avatar = `${config.api.domainUpload}/${res.path}`
-        this.$message.closeAll()
-        this.$message({
-          message: res.msg || 'Tải lên thành công',
-          type: 'success',
-          duration: 3000
-        })
-      }
-    },
     async callbackFromChild(e) {
       if (e.action === 'visibility' && e.data === true) {
         // khi ban đầu vào form thì sẽ reset validation,
@@ -263,10 +167,7 @@ export default {
         return
       }
       if (e.action === 'nguoi-dung-submit') {
-        const dataSubmit = {
-          ...this.form,
-          birthday: moment(this.form.birthday).unix()
-        }
+        const dataSubmit = {...this.form}
 
         this.$refs.form.validate((valid) => {
           if (valid) {

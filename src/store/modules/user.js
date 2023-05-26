@@ -1,8 +1,9 @@
 // import { getInfo } from '@/api/auth/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import {getToken, setToken, removeToken} from '@/utils/auth'
+import {resetRouter} from '@/router'
 import UserAPI from '@/api/auth/user'
 import config from '@/utils/config'
+import eventEmitter from "@/utils/eventEmitter";
 
 const getDefaultState = () => {
   return {
@@ -38,10 +39,11 @@ const mutations = {
 
 const actions = {
   // user login
-  login({ commit }, userInfo) {
-    const { username, password } = userInfo
+  login({commit}, userInfo) {
+    const {username, password} = userInfo
     return new Promise((resolve, reject) => {
-      UserAPI.login({ username: username.trim(), password: password }).then(response => {
+      UserAPI.login({username: username.trim(), password: password}).then(response => {
+        // eventEmitter.emit('loggedIn', response)
         commit('SET_TOKEN', response.token)
         commit('SET_USER_INFO', response)
         setToken(response.token)
@@ -49,15 +51,6 @@ const actions = {
       }).catch(error => {
         reject(error)
       })
-    })
-  },
-  loginViaIp({ commit }, response) {
-    return new Promise((resolve, reject) => {
-      response.isLoginViaIp = true
-      commit('SET_TOKEN', response.token)
-      commit('SET_USER_INFO', response)
-      setToken(response.token)
-      resolve()
     })
   },
 
@@ -83,7 +76,7 @@ const actions = {
   // },
 
   // user logout
-  logout({ commit, state }) {
+  logout({commit, state}) {
     return new Promise((resolve, reject) => {
       removeToken() // must remove  token  first
       resetRouter()
@@ -94,7 +87,7 @@ const actions = {
   },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken({commit}) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
       commit('RESET_STATE')

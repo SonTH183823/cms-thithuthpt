@@ -68,11 +68,6 @@ const config = {
   eventName: {
     UPDATE_KANBAN_BOARD: 'updateKanbanBoard'
   },
-  taxonomyType: {
-    CHUC_VU: 1,
-    DON_VI: 2,
-    CAP_BAC: 3,
-  },
   fileType: {
     1: 'excel',
     2: 'csv'
@@ -609,6 +604,35 @@ const config = {
       value: 5,
       typeTag: '',
       label: 'CAR INTERESTED CHANGE'
+    },
+  ],
+  roleConfig: {
+    NEWS: 1,
+    DOCUMENTS: 2,
+    TOEIC: 3,
+    EXAMTEST: 4,
+    INTRODUCTION: 5
+  },
+  roleConfigMap: [
+    {
+      label: 'Tin tức',
+      value: 1
+    },
+    {
+      label: 'Tài liệu ôn tập',
+      value: 2
+    },
+    {
+      label: 'Toeic',
+      value: 3
+    },
+    {
+      label: 'Đề thi',
+      value: 4
+    },
+    {
+      label: 'Giới thiệu',
+      value: 5
     },
   ]
 }

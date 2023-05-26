@@ -19,9 +19,9 @@
               Trang chủ
             </el-dropdown-item>
           </router-link>
-          <!--          <el-dropdown-item @click.native="handleEditInfo">-->
-          <!--            Thông tin cá nhân-->
-          <!--          </el-dropdown-item>-->
+          <el-dropdown-item @click.native="handleEditInfo">
+            Thông tin cá nhân
+          </el-dropdown-item>
           <el-dropdown-item @click.native="handleChangePassword">
             Đổi mật khẩu
           </el-dropdown-item>
@@ -41,21 +41,12 @@
     >
 
       <el-form ref="form" :model="form">
-        <div class="avatar-wrap">
-          <el-upload
-            class="avatar-uploader"
-            :action="urlUploadImage"
-            :show-file-list="false"
-            :auto-upload="true"
-            :on-success="onUploadAvatarSuccess"
-          >
-            <img v-if="form.avatar" :src="form.avatar" class="avatar" alt="thumbnails">
-            <i v-else class="el-icon-user-solid avatar-blank"/>
-            <i class="el-icon-edit-outline avatar-uploader-icon"/>
-          </el-upload>
-        </div>
-        <el-form-item label="Email" :label-width="formLabelWidth" prop="email">
-          <el-input v-model="form.email" autocomplete="off" type="email"/>
+        <el-form-item
+          label="Tên đăng nhập"
+          :label-width="formLabelWidth"
+          prop="username"
+        >
+          <el-input v-model="form.username" :disabled="true" autocomplete="off"/>
         </el-form-item>
         <el-form-item
           label="Họ và tên"
@@ -63,40 +54,6 @@
           prop="name"
         >
           <el-input v-model="form.name" autocomplete="off"/>
-        </el-form-item>
-        <el-form-item label="CMT/CCCD" :label-width="formLabelWidth" prop="idCard">
-          <el-input v-model="form.idCard" autocomplete="off" type="number"/>
-        </el-form-item>
-        <el-form-item
-          label="Ngày sinh"
-          :label-width="formLabelWidth"
-          prop="birthday"
-        >
-          <el-date-picker format="dd/MM/yyyy" placeholder="Ngày/Tháng/Năm" v-model="form.birthday"/>
-        </el-form-item>
-        <el-form-item
-          label="Giới tính"
-          :label-width="formLabelWidth"
-          prop="gender"
-        >
-          <el-select v-model="form.gender">
-            <el-option
-              v-for="(gender, idx) in genderMap"
-              :key="idx"
-              :label="gender[1]"
-              :value="+gender[0]"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Địa chỉ" :label-width="formLabelWidth" prop="address">
-          <el-input v-model="form.address" autocomplete="off"/>
-        </el-form-item>
-        <el-form-item
-          label="Số điện thoại"
-          :label-width="formLabelWidth"
-          prop="phoneNumber"
-        >
-          <el-input v-model="form.phoneNumber" autocomplete="off" type="number"/>
         </el-form-item>
       </el-form>
 
@@ -114,7 +71,7 @@
       :visible.sync="dialogPasswordForm"
     >
 
-      <el-form :model="formPassword" ref="formPassword" :rules="ruleFormPassword">
+      <el-form ref="formPassword" :model="formPassword" :rules="ruleFormPassword">
         <el-form-item
           label="Mật khẩu cũ"
           :label-width="formLabelWidth"
@@ -122,11 +79,11 @@
         >
           <el-input
             ref="oldPassword"
-            :type="oldPasswordType"
             :key="oldPasswordType"
             v-model="formPassword.oldPassword"
+            :type="oldPasswordType"
             autocomplete="off"
-          ></el-input>
+          />
           <span class="show-pwd" @click="showOldPwd">
             <svg-icon :icon-class="oldPasswordType === 'password' ? 'eye' : 'eye-open'"/>
           </span>
@@ -138,9 +95,9 @@
         >
           <el-input
             ref="newPassword"
-            :type="newPasswordType"
             :key="newPasswordType"
             v-model="formPassword.newPassword"
+            :type="newPasswordType"
             autocomplete="off"
           />
           <span class="show-pwd" @click="showNewPwd">
@@ -154,10 +111,10 @@
         >
           <el-input
             ref="checkPass"
-            :type="checkPassType"
             :key="checkPassType"
-            autocomplete="off"
             v-model="formPassword.checkPass"
+            :type="checkPassType"
+            autocomplete="off"
           />
           <span class="show-pwd" @click="showCheckPass">
             <svg-icon :icon-class="checkPassType === 'password' ? 'eye' : 'eye-open'"/>
@@ -176,7 +133,7 @@
 
 <script>
 import moment from 'moment'
-import { mapGetters } from 'vuex'
+import {mapGetters} from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import config from '@/utils/config'
@@ -229,7 +186,7 @@ export default {
           },
         ],
         checkPass: [
-          { required: true, validator: validatePass2, trigger: 'change' },
+          {required: true, validator: validatePass2, trigger: 'change'},
         ],
       },
       form: {
@@ -242,9 +199,6 @@ export default {
       'sidebar',
       'avatar'
     ]),
-  },
-  beforeDestroy() {
-    clearInterval(this.intervalNotify)
   },
   methods: {
     showOldPwd() {
@@ -277,28 +231,6 @@ export default {
         this.$refs.checkPass.focus()
       })
     },
-    toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
-    },
-    checkNotifyAsRead() {
-      const newestNotifyId = localStorage.getItem('newestNotifyId')
-      if (this.notifications[0]?._id !== newestNotifyId) {
-        this.isReadNotify = false
-      } else {
-        this.isReadNotify = true
-      }
-    },
-    async onUploadAvatarSuccess(res) {
-      if (res) {
-        this.form.avatar = `${config.api.upload}${res.path}`
-        this.$message.closeAll()
-        this.$message({
-          message: res.msg || 'Tải lên thành công',
-          type: 'success',
-          duration: 3000
-        })
-      }
-    },
     handleChangePassword() {
       this.dialogPasswordForm = true
       this.formPassword = {}
@@ -308,17 +240,24 @@ export default {
       this.$refs.formPassword.resetFields()
     },
     async handleEditInfo() {
-      this.form = { ...this.userInfo }
+      this.form = {...this.userInfo}
       this.dialogUserInfo = true
     },
     async handleSubmitUserInfo() {
+      await UserAPI.update(this.form._id, ...this.form)
+        .then((res) => {
+
+        })
+        .catch((err) => {
+          console.error(err)
+        })
     },
     async handleSubmitChangePassword() {
-      this.$refs.formPassword.validate(async(valid) => {
-        const { newPassword, oldPassword } = this.formPassword
-        const dataSubmit = { newPassword, oldPassword }
+      this.$refs.formPassword.validate(async (valid) => {
+        const {newPassword, oldPassword} = this.formPassword
+        const dataSubmit = {newPassword, oldPassword}
         if (valid) {
-          const res = await UserAPI.changePassword(dataSubmit)
+          await UserAPI.changePassword(dataSubmit)
           this.dialogPasswordForm = false
         } else {
           return false

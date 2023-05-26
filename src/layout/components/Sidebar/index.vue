@@ -18,23 +18,24 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import {mapGetters} from 'vuex'
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
 
 export default {
-  components: { SidebarItem, Logo },
+  components: {SidebarItem, Logo},
   computed: {
     ...mapGetters([
       'sidebar'
     ]),
     routes() {
+      console.log(this.$router.options.routes)
       return this.$router.options.routes
     },
     activeMenu() {
       const route = this.$route
-      const { meta, path } = route
+      const {meta, path} = route
       // if set path, the sidebar will highlight the path you set
       if (meta.activeMenu) {
         return meta.activeMenu
@@ -67,17 +68,5 @@ export default {
   content: url("../../../assets/images/right.png") !important;
 }
 
-//.el-icon-search:before {
-//  content: url("../../../assets/images/search.png") !important;
-//  align-items: center;
-//  justify-content: center;
-//  display: flex;
-//  background-color: #f56c6c;
-//  object-fit: contain;
-//}
-
-//.el-icon-arrow-up:before {
-//  content: url("../../../assets/images/up-arrow.png") !important;
-//}
 
 </style>

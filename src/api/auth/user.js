@@ -50,13 +50,6 @@ const UserAPI = {
       method: 'get'
     })
   },
-  loginViaIp(data = {}) {
-    return request({
-      url: `${config.api.user}/loginViaIp`,
-      method: 'post',
-      data
-    })
-  },
   changePassword(data) {
     return request({
       url: `${config.api.user}/changePassword`,
