@@ -31,6 +31,11 @@
               </el-tag>
             </template>
           </el-table-column>
+          <el-table-column align="center" label="Người tạo" min-width="100px">
+            <template slot-scope="scope">
+              <div v-if="scope.row.createdBy">{{ scope.row.createdBy.username || 'unknown' }} - {{ scope.row.createdBy.name || 'unknown' }}</div>
+            </template>
+          </el-table-column>
           <el-table-column align="center" property="description" label="Mô tả" min-width="150px"></el-table-column>
           <el-table-column align="center" label="Tác vụ" width="180" min-width="150px" fixed="right">
             <template slot-scope="scope">
@@ -42,16 +47,6 @@
                   @click="handleEdit(scope.row)"
                 >
                   <i class="el-icon-edit"/>
-                </el-button>
-              </el-tooltip>
-              <el-tooltip content="Cấu hình SEO" placement="top">
-                <el-button
-                  type="warning"
-                  size="mini"
-                  plain
-                  @click="handleSEO(scope.row._id)"
-                >
-                  <i class="el-icon-search"/>
                 </el-button>
               </el-tooltip>
               <el-tooltip content="Xóa" placement="top">
@@ -98,13 +93,6 @@
       </span>
     </el-dialog>
 
-    <DialogOwnSEO
-      :dialog-form-visible="dialogVisibleSEO"
-      :id-object="IdObject"
-      target-type="cateNewsId"
-      @update-visiable-seo="onUpdateVisiableSEO"
-    />
-
   </div>
 
 </template>
@@ -114,13 +102,11 @@
 import NewsApi from "@/api/newsApi"
 import config from "@/utils/config"
 import TablePagination from '@/components/TablePagination/index'
-import { validText } from "@/utils/validate"
-import DialogOwnSEO from "@/views/manageSEO/dialogOwnSEO"
+import {validText} from "@/utils/validate"
 
 export default {
   components: {
-    TablePagination,
-    DialogOwnSEO
+    TablePagination
   },
   data() {
     const validateText = (rule, value, callback) => {
@@ -152,7 +138,7 @@ export default {
       formTitle: '',
       formType: 'add',
       config,
-      url: `${config.api.domainNews}/cateNews`,
+      url: `${config.api.domain}/cateNews`,
     }
   },
   methods: {
@@ -172,7 +158,7 @@ export default {
     handleEdit(item) {
       this.formType = 'update'
       this.formTitle = 'Cập nhật loại tin tức'
-      this.formSubmit = { ...item }
+      this.formSubmit = {...item}
       if (this.formSubmit.isOutStanding) {
         this.isOutStanding = true
       } else {
@@ -200,8 +186,9 @@ export default {
       } else {
         this.formSubmit.isOutStanding = 0
       }
-      const dataSubmit = {
-        ...this.formSubmit
+      const dataSubmit = {...this.formSubmit}
+      if (this.formSubmit?.createdBy) {
+        dataSubmit.createdBy = this.formSubmit.createdBy._id || ''
       }
       await this.$refs['formSubmit'].validate(async valid => {
         if (this.formSubmit.name.length === 0) {

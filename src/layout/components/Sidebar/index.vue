@@ -30,7 +30,6 @@ export default {
       'sidebar'
     ]),
     routes() {
-      console.log(this.$router.options.routes)
       return this.$router.options.routes
     },
     activeMenu() {
@@ -67,6 +66,5 @@ export default {
 .el-icon-arrow-right:before {
   content: url("../../../assets/images/right.png") !important;
 }
-
 
 </style>

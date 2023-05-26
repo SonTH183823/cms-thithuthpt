@@ -23,10 +23,12 @@ const baseRouter = [
     }]
   },
   {
-    path: 'nguoi-dung',
-    name: 'Người dùng cms',
-    component: () => import('@/views/system/user/index'),
-    meta: {title: 'Người dùng CMS', icon: 'user', authorize: [config.roleConfig['NEWS']]},
+    path: '/', component: Layout, children: [{
+      path: '/nguoi-dung',
+      name: 'Người dùng cms',
+      component: () => import('@/views/system/user/index'),
+      meta: {title: 'Người dùng CMS', icon: 'user', authorize: [config.roleConfig.ADMIN]},
+    }]
   },
   {
     path: '/login',
@@ -78,7 +80,7 @@ const baseRouter = [
         authorize: [config.roleConfig['NEWS']]
       },
       hidden: true
-    },]
+    }]
   },
   {
     path: '/toeic', component: Layout, children: [{

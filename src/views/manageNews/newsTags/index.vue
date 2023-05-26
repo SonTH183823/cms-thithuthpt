@@ -123,7 +123,7 @@ export default {
       formTitle: '',
       formType: 'add',
       config,
-      url: `${config.api.domainNews}/tagNews`,
+      url: `${config.api.domain}/tagNews`,
     }
   },
   methods: {

@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 import config from '@/utils/config'
-import queryString from "query-string";
+import queryString from "query-string"
 
 const NewsAPI = {
   create(data) {
@@ -18,27 +18,27 @@ const NewsAPI = {
   },
   getCategoryNews(params = {}) {
     return request({
-      url: `${config.api.domainNews}/cateNews?${queryString.stringify(params)}`,
+      url: `${config.api.domain}/cateNews?${queryString.stringify(params)}`,
       method: 'get'
     })
   },
   createCategoryNews(data) {
     return request({
-      url: `${config.api.domainNews}/cateNews`,
+      url: `${config.api.domain}/cateNews`,
       method: 'post',
       data
     })
   },
   updateCategoryNews(data, id) {
     return request({
-      url: `${config.api.domainNews}/cateNews/${id}`,
+      url: `${config.api.domain}/cateNews/${id}`,
       method: 'put',
       data
     })
   },
   deleteCategoryNews(id) {
     return request({
-      url: `${config.api.domainNews}/cateNews/${id}`,
+      url: `${config.api.domain}/cateNews/${id}`,
       method: 'delete'
     })
   },
@@ -63,27 +63,27 @@ const NewsAPI = {
   },
   getTagNews(params = {}) {
     return request({
-      url: `${config.api.domainNews}/tagNews?${queryString.stringify(params)}`,
+      url: `${config.api.domain}/tagNews?${queryString.stringify(params)}`,
       method: 'get'
     })
   },
   createTagNews(data) {
     return request({
-      url: `${config.api.domainNews}/tagNews`,
+      url: `${config.api.domain}/tagNews`,
       method: 'post',
       data
     })
   },
   updateTagNews(data, id) {
     return request({
-      url: `${config.api.domainNews}/tagNews/${id}`,
+      url: `${config.api.domain}/tagNews/${id}`,
       method: 'put',
       data
     })
   },
   deleteTagNews(id) {
     return request({
-      url: `${config.api.domainNews}/tagNews/${id}`,
+      url: `${config.api.domain}/tagNews/${id}`,
       method: 'delete'
     })
   },
