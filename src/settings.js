@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'thithuthpt',
+  title: 'Thi thử THPT',
 
   /**
    * @type {boolean} true | false
