@@ -21,7 +21,8 @@
         <el-input v-model="form.name" autocomplete="off"/>
       </el-form-item>
       <el-form-item v-if="form.username !== 'admin'" label="Quản trị viên" prop="isAdministrator"
-                    :label-width="formLabelWidth">
+                    :label-width="formLabelWidth"
+      >
         <el-switch v-model="form.isAdministrator" :active-value="1" :inactive-value="0"/>
       </el-form-item>
       <el-form-item
@@ -107,7 +108,7 @@ export default {
         username: ''
       },
       form: this.formvalue
-        ? {...this.formvalue}
+        ? { ...this.formvalue }
         : {
           name: '',
           username: '',
@@ -131,7 +132,7 @@ export default {
           },
         ],
         checkPass: [
-          {required: true, validator: validatePass2, trigger: 'blur'},
+          { required: true, validator: validatePass2, trigger: 'blur' },
         ],
         roles: [
           {
@@ -146,16 +147,13 @@ export default {
   watch: {
     formvalue(newValue) {
       if (newValue) {
-        this.form = {...newValue}
+        this.form = { ...newValue }
         this.checked = !newValue._id
       } else {
-        this.form = {...this.defaultForm}
+        this.form = { ...this.defaultForm }
         this.checked = true
       }
     },
-  },
-  mounted() {
-    console.log(this.formvalue.roles)
   },
   methods: {
     async callbackFromChild(e) {
@@ -167,7 +165,7 @@ export default {
         return
       }
       if (e.action === 'nguoi-dung-submit') {
-        const dataSubmit = {...this.form}
+        const dataSubmit = { ...this.form }
 
         this.$refs.form.validate((valid) => {
           if (valid) {

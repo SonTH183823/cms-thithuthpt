@@ -70,7 +70,7 @@
           </template>
           <el-table-column label="Ghi chú" prop="note" align="center" min-width="150"></el-table-column>
           <el-table-column
-            align="center" label="Tác vụ" width="300" fixed="right"
+            align="center" label="Tác vụ" width="200" fixed="right"
           >
             <template slot-scope="scope">
               <el-tooltip content="Ghi chú" placement="left">

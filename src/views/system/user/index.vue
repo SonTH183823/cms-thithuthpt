@@ -5,7 +5,8 @@
       :url="url"
       :search-params="searchParams"
       :search-form="searchForm"
-      :is-search-date-range="false">
+      :is-search-date-range="false"
+    >
       <template slot="action" slot-scope="{ tableData }">
         <el-button size="small" type="primary" @click="handleCreate">
           Thêm mới
@@ -56,6 +57,21 @@
               :search-remote="handleSearch"
             />
           </template>
+          <el-table-column
+            sortable
+            label="Quyền hạn"
+            prop="roles"
+            min-width="220"
+          >
+            <template slot-scope="scope">
+              <div class="avatar-customer-box">
+                <div v-if="scope.row.roles.includes(6)">• Admin</div>
+                <ul v-else>
+                  <li v-for="item in scope.row.roles">{{ config.roleConfigMap[item - 1].label }}</li>
+                </ul>
+              </div>
+            </template>
+          </el-table-column>
 
           <el-table-column
             fixed="right"
@@ -102,7 +118,7 @@
 <script>
 import TablePagination from '@/components/TablePagination/index'
 import NguoiDungForm from './detail/index'
-import {handleSearchInTable, parseTime} from '@/utils'
+import { handleSearchInTable, parseTime } from '@/utils'
 import config from '@/utils/config'
 import SearchColumn from '@/components/SearchColumn/index'
 import UserAPI from '@/api/auth/user'
@@ -116,6 +132,7 @@ export default {
   },
   data() {
     return {
+      config,
       url: `${config.api.user}`,
       searchForm: {},
       searchParams: [
@@ -160,7 +177,7 @@ export default {
     // Thêm mới
     async handleCreate() {
       this.formType = 'create'
-      this.formValue = {status: 1, avatar: ''}
+      this.formValue = { status: 1, avatar: '' }
       this.$refs.form.$refs.dialog.updateShowDialog(true)
     },
 
@@ -168,7 +185,7 @@ export default {
     async handleUpdate(row) {
       this.formType = 'edit'
       const res = await UserAPI.getById(row._id)
-      this.formValue = {...res}
+      this.formValue = { ...res }
       this.$refs.form.$refs.dialog.updateShowDialog(true)
     },
 

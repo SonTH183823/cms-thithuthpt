@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'CARPLA',
+  title: 'thithuthpt',
 
   /**
    * @type {boolean} true | false

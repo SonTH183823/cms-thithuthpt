@@ -637,6 +637,10 @@ const config = {
       label: 'Giới thiệu',
       value: 5
     },
+    {
+      label: 'Admin',
+      value: 6
+    },
   ]
 }
 
