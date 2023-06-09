@@ -1,5 +1,5 @@
-const domainAuth = process.env['VUE_APP_AUTH_API'] || 'http://127.0.0.1:8003'
-const domain = process.env['VUE_APP_DOMAIN_API'] || 'http://127.0.0.1:8003'
+const domainAuth = process.env['VUE_APP_AUTH_API'] || 'http://127.0.0.1:8003' + '/cms'
+const domain = process.env['VUE_APP_DOMAIN_API'] || 'http://127.0.0.1:8003' + '/cms'
 const domainPartner = process.env['VUE_APP_PARTNER_API'] || 'http://192.168.11.42:8009'
 const domainPopupForums = process.env['VUE_APP_PARTNER_API'] || 'http://192.168.11.42:8061'
 const domainUpload = process.env['VUE_APP_UPLOAD_API'] || 'https://images-cdn.carpla.dev'
@@ -45,7 +45,8 @@ const config = {
     rating: `${domainDecorate}/rate`,
     minio: `${domainMinIO}/presignedUrl`,
     auth: `${domainAuth}/userCMS`,
-    upload: `${domainUpload}`,
+    upload: `${domain}/upload`,
+    uploadMultiple: `${domain}/uploadMany`,
     user: `${domainAuth}/userCMS`,
     domainNews,
     news: `${domainAuth}/news`,
