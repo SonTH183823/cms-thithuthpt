@@ -2,6 +2,8 @@
  * Created by PanJiaChen on 16/11/18.
  */
 
+import config from "@/utils/config"
+
 /**
  * Parse the time to string
  * @param {(Object|string|number)} time
@@ -126,6 +128,20 @@ export function getSum(...args) {
     }
   })
   return total
+}
+
+export const genURLImage = (image) => {
+  if (image) {
+    if (image.includes('blob:')) {
+      return image
+    } else {
+      if (image.includes('http')) {
+        return image
+      } else {
+        return `${config.api.domainUpload}/${image}`
+      }
+    }
+  }
 }
 
 export function handleSearchInTable(context, prop, value, searchType = 'local', tableName) {

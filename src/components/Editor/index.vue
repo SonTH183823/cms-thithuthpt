@@ -8,6 +8,7 @@
 import 'froala-editor/js/languages/vi.js'
 import MinIOAPI from "@/api/minioApi"
 import config from "@/utils/config"
+import UploadAPI from "@/api/uploadApi"
 
 export default {
   name: 'EditorComponent',
@@ -34,10 +35,11 @@ export default {
           urlVideoEditor: undefined,
           'image.beforeUpload': async function(images) {
             const file = images[0]
-            const data = await MinIOAPI.getPreUrlUpload({ name: file.name || `imgPaste${file.size}${file.type}` })
-            const blob = new Blob([file], { type: file.type })
-            await MinIOAPI.upload(data.url, blob)
-            this.urlImgMinIO = `${config.api.domainUpload}/${data.path}`
+            // const data = await MinIOAPI.getPreUrlUpload({ name: file.name || `imgPaste${file.size}${file.type}` })
+            // const blob = new Blob([file], { type: file.type })
+            // await MinIOAPI.upload(data.url, blob)
+            const data = await UploadAPI.uploadFile(file)
+            this.urlImgMinIO = `${config.api.domainUpload}/${data.filename}`
             const html = this.html.get().toString()
             const regex = new RegExp(`${this.urlImgEditor}`)
             this.html.set(html.replace(regex, this.urlImgMinIO))
@@ -50,10 +52,11 @@ export default {
           },
           'video.beforeUpload': async function(videos) {
             const file = videos[0]
-            const data = await MinIOAPI.getPreUrlUpload({ name: file.name })
-            const blob = new Blob([file], { type: file.type })
-            await MinIOAPI.upload(data.url, blob)
-            this.urlVideoMinIO = `src="${config.api.domainUploadFile}/dev-carpla-tc/${data.path}"`
+            // const data = await MinIOAPI.getPreUrlUpload({ name: file.name })
+            // const blob = new Blob([file], { type: file.type })
+            // await MinIOAPI.upload(data.url, blob)
+            const data = await UploadAPI.uploadFile(file)
+            this.urlVideoMinIO = `src="${config.api.domainUpload}/${data.filename}"`
             const html = this.html.get().toString()
             const regex = new RegExp(`${this.urlVideoEditor}`)
             this.html.set(html.replace(regex, this.urlVideoMinIO))

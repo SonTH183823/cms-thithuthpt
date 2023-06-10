@@ -55,7 +55,7 @@
           <el-form-item label="Hình ảnh" prop="thumbnail">
             <div>
               <div v-if="formSubmit.thumbnail" style="position: relative">
-                <img :src="`${config.api.domainUpload}/${formSubmit.thumbnail}`" class="one-img">
+                <img :src="`${config.api.domainUpload}/${formSubmit.thumbnail}`" class="one-img" alt="">
                 <span class="close" @click="onRemoveFile">
                   <i
                     class="el-icon-close"
@@ -163,6 +163,7 @@ import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import MinIOAPI from "@/api/minioApi"
 import EditorComponent from "@/components/Editor"
+import UploadAPI from "@/api/uploadApi"
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -205,10 +206,9 @@ export default {
       server: {
         process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
-            const data = await MinIOAPI.getPreUrlUpload({ name: file.name })
-            await MinIOAPI.upload(data.url, file)
+            const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
-              this.formSubmit.thumbnail = data.path
+              this.formSubmit.thumbnail = data.filename
               this.editorFocus = true
             }
           } else {

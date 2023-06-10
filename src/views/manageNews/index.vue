@@ -87,7 +87,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="createdBy" label="Người tạo" align="center" min-width="50"></el-table-column>
-          <el-table-column align="center" label="Tác vụ" width="180" min-width="150px" fixed="right">
+          <el-table-column align="center" label="Tác vụ" width="180" min-width="130px" fixed="right">
             <template slot-scope="scope">
               <el-tooltip content="Sửa" placement="top">
                 <el-button
@@ -97,16 +97,6 @@
                   @click="handleEdit(scope.row)"
                 >
                   <i class="el-icon-edit"/>
-                </el-button>
-              </el-tooltip>
-              <el-tooltip content="Cấu hình SEO" placement="top">
-                <el-button
-                  type="warning"
-                  size="mini"
-                  plain
-                  @click="handleSEO(scope.row._id)"
-                >
-                  <i class="el-icon-search"/>
                 </el-button>
               </el-tooltip>
               <el-tooltip content="Xóa" placement="top">
@@ -130,12 +120,6 @@
         </el-table>
       </template>
     </table-pagination>
-    <DialogOwnSEO
-      :dialog-form-visible="dialogVisibleSEO"
-      :id-object="IdObject"
-      target-type="newsId"
-      @update-visiable-seo="onUpdateVisiableSEO"
-    />
   </div>
 </template>
 
@@ -145,14 +129,12 @@ import TablePagination from '@/components/TablePagination/index'
 import { handleSearchInTable, parseTime } from '@/utils'
 import config from "@/utils/config"
 import SearchColumn from "@/components/SearchColumn"
-import DialogOwnSEO from "@/views/manageSEO/dialogOwnSEO"
 
 export default {
   name: 'ManageNews',
   components: {
     TablePagination,
     SearchColumn,
-    DialogOwnSEO
   },
   data() {
     return {
@@ -189,9 +171,6 @@ export default {
     }
   },
   methods: {
-    onUpdateVisiableSEO(e) {
-      this.dialogVisibleSEO = e.data.visible
-    },
     async handleSearch(prop, value) {
       handleSearchInTable(this, prop, value, 'remote')
     },
