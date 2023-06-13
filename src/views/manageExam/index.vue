@@ -200,7 +200,7 @@ export default {
       }
     }
     return {
-      url: config.api.rating,
+      url: config.api.exam,
       config,
       server: {
         process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
@@ -272,14 +272,6 @@ export default {
         type: blob.type
       })
     },
-    async handleEdit(prams) {
-      this.formType = 'edit'
-      this.form = {...prams}
-      if (this.form.avatar) {
-        this.imgFile = [await this.getImageFilePreview(this.form.avatar)]
-      }
-      this.dialogFormVisible = true
-    },
     async handleDelete(prams) {
       try {
         await RatingAPI.delete(prams._id)
@@ -291,10 +283,6 @@ export default {
     handleCancel() {
       this.dialogFormVisible = false
       this.refreshData()
-    },
-    handleAdd() {
-      this.formType = 'create'
-      this.dialogFormVisible = true
     },
     async handleSubmit() {
       await this.$refs.form.validate(async valid => {
@@ -332,6 +320,12 @@ export default {
     },
     indexMethod(index) {
       return index + 1
+    },
+    handleEdit(row) {
+      this.$router.push('/quan-ly-de-thi/de-thi/' + row._id)
+    },
+    handleAdd() {
+      this.$router.push('/quan-ly-de-thi/de-thi/0')
     },
   }
 }

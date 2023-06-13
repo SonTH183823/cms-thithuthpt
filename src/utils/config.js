@@ -27,6 +27,9 @@ const config = {
   api: {
     domain,
     domainUpload,
+    rating: `${domain}/rate`,
+    exam: `${domain}/exam`,
+    question: `${domain}/question`,
     domainSalePolicy,
     domainPointCar,
     domainCar,
@@ -42,7 +45,6 @@ const config = {
     popupForums: `${domainPopupForums}/popups`,
     notification: `${domainNotification}/notification`,
     notificationTemplate: `${domainNotification}/notificationTemplate`,
-    rating: `${domain}/rate`,
     minio: `${domainMinIO}/presignedUrl`,
     auth: `${domainAuth}/userCMS`,
     upload: `${domain}/upload`,
@@ -642,6 +644,57 @@ const config = {
       label: 'Admin',
       value: 6
     },
+  ],
+  subjectConfig: [
+    {
+      value: 1,
+      label: 'Toán Học'
+    },
+    {
+      value: 2,
+      label: 'Vật Lý'
+    },
+    {
+      value: 3,
+      label: 'Hóa Học'
+    },
+    {
+      value: 4,
+      label: 'Sinh Học'
+    },
+    {
+      value: 5,
+      label: 'Tiếng Anh'
+    },
+    {
+      value: 6,
+      label: 'Lịch Sử'
+    },
+    {
+      value: 7,
+      label: 'Địa Lý'
+    },
+    {
+      value: 8,
+      label: 'GDCD'
+    },
+    {
+      value: 9,
+      label: 'Toeic'
+    },
+  ],
+  subToanList: [
+    'Bất Phương Trình',
+    'Cấp Số Cộng - Số Nhân',
+    'Hàm Số - Giới Hạn',
+    'Hàm Số - Đồ Thị',
+    'Hình Học Giải Tích',
+    'Hình Học Không Gian',
+    'Mũ - Lũy Thừa',
+    'Số Phức',
+    'Tích Phân - Đạo Hàm',
+    'Tổ Hợp - Xác Suất',
+    'Loại Khác'
   ]
 }
 

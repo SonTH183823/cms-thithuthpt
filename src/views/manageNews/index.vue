@@ -138,7 +138,6 @@ export default {
   },
   data() {
     return {
-      dialogVisibleSEO: false,
       IdObject: '',
       config,
       url: `${config.api.news}`,
@@ -176,10 +175,6 @@ export default {
     },
     handleEdit(row) {
       this.$router.push('/quan-ly-tin-tuc/tin-tuc/' + row._id)
-    },
-    handleSEO(id) {
-      this.IdObject = id
-      this.dialogVisibleSEO = true
     },
     handleAddNews() {
       this.$router.push('/quan-ly-tin-tuc/tin-tuc/0')
