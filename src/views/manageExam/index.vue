@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-dialog
-      :title="formType === 'create' ? 'Thêm đánh giá mới' : 'Chỉnh sửa đánh giá'"
+      :title="formType === 'create' ? 'Thêm đề thi mới' : 'Chỉnh sửa đề thi'"
       :visible.sync="dialogFormVisible"
-      :close-on-click-modal=false
+      :close-on-click-modal="false"
       :before-close="handleCancel"
       top="50px"
       width="60%"

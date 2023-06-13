@@ -37,7 +37,8 @@
                   </span>
                 </div>
                 <img v-else src="../../../assets/images/image_placeholder.png" style="max-width: 250px"
-                     @click="addImg()">
+                     @click="addImg()"
+                >
                 <div v-if="!formSubmit.thumbnail" class="el-row--flex">
                   <el-button type="text" @click="addImg()">Thêm ảnh cover</el-button>
                 </div>
@@ -74,10 +75,24 @@
               </el-select>
             </el-form-item>
             <el-form-item label="Phân phối đề thi">
-              <el-input v-model="formSubmit.description" type="textarea" :rows="2"/>
+              <div style="display: flex; justify-content: space-between; padding-left: 30px; font-weight: bold">
+                <span>STT</span>
+                <span>Dạng câu hỏi</span>
+                <span>Số câu hỏi</span>
+              </div>
+              <div v-for="(item,index) in listTypeQuestion" style="padding-left: 40px; padding-right: 30px">
+                <div :key="index" style="display: flex; justify-content: space-between">
+                  <span>{{ index + 1 }}</span>
+                  <span>{{ item.label }}</span>
+                  <span>{{ item.value }}</span>
+                </div>
+              </div>
             </el-form-item>
           </el-col>
         </el-form>
+      </el-row>
+      <el-row>
+        <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>
       </el-row>
     </div>
     <el-dialog
@@ -109,9 +124,9 @@
 
 <script>
 import config from "@/utils/config"
-import {validText} from "@/utils/validate"
+import { validText } from "@/utils/validate"
 import NewsApi from "@/api/newsApi"
-import vueFilePond, {setOptions} from 'vue-filepond'
+import vueFilePond, { setOptions } from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -155,12 +170,11 @@ export default {
     }
     return {
       myFiles: [],
-      myFiles1: [],
       hasImg: true,
       isUpload: false,
       dialogVisible: false,
       server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -178,7 +192,7 @@ export default {
       dialogVisibleAddImg: false,
       formSubmit: {
         title: '',
-        category: [],
+        category: 1,
         active: 1,
         thumbnail: '',
         description: '',
@@ -205,8 +219,8 @@ export default {
           message: 'Vui lòng nhập mô tả bài viết',
           validator: validateText
         }],
-        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
-        category: [{required: true, trigger: 'blur', message: ' '}]
+        thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],
+        category: [{ required: true, trigger: 'blur', message: ' ' }]
       },
       formType: '',
       NewsId: this.$route.params.id,
@@ -214,6 +228,23 @@ export default {
       categoryList: [],
       tagList: [],
     }
+  },
+  watch: {
+    'formSubmit.category': {
+      handler: function(val) {
+        this.listTypeQuestion = []
+        if (val === 1) {
+          for (const item of config.subToanList) {
+            this.listTypeQuestion.push({
+              label: item,
+              value: 5
+            })
+          }
+        }
+      },
+      immediate: true,
+      deep: true
+    },
   },
 
   async mounted() {
@@ -228,6 +259,7 @@ export default {
       await this.loadFormEdit()
     } else {
       this.formType = 'create'
+
     }
     this.loadingNews = false
   },
@@ -304,7 +336,7 @@ export default {
       })
     },
     async handleCategory() {
-      const {data} = await NewsApi.getCategoryNews({perPage: 1000})
+      const { data } = await NewsApi.getCategoryNews({ perPage: 1000 })
       this.categoryList = data.map(item => {
         return {
           name: item.name,
@@ -313,7 +345,7 @@ export default {
       })
     },
     async handleTags() {
-      const {data} = await NewsApi.getTagNews({perPage: 1000})
+      const { data } = await NewsApi.getTagNews({ perPage: 1000 })
       this.tagList = data.map(item => {
         return {
           name: item.name,
