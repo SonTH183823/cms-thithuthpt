@@ -13,7 +13,8 @@
           <el-col :xl="12" :lg="12">
             <el-form-item sortable class="banner-attri" label="Kích hoạt" prop="active">
               <el-switch v-model="form.active" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                         style="margin-right: 10px;"/>
+                         style="margin-right: 10px;"
+              />
             </el-form-item>
             <el-form-item class="banner-attri" label="Tên" prop="name">
               <el-input v-model="form.name"></el-input>
@@ -40,17 +41,17 @@
             <el-form-item class="banner-attri" label="Đánh giá (sao)" prop="star">
               <el-input-number v-model="form.star" :precision="1" :step="0.1" :max="5" :min="0"></el-input-number>
             </el-form-item>
-<!--            <el-form-item class="banner-attri" label="Màn hình" prop="screen">-->
-<!--              <el-select v-model="form.fromScreen" placeholder="Chọn màn hình">-->
-<!--                <el-option-->
-<!--                  v-for="(item, index) in listScreens"-->
-<!--                  :key="index"-->
-<!--                  :label="item"-->
-<!--                  :value="index + 1"-->
-<!--                >-->
-<!--                </el-option>-->
-<!--              </el-select>-->
-<!--            </el-form-item>-->
+            <!--            <el-form-item class="banner-attri" label="Màn hình" prop="screen">-->
+            <!--              <el-select v-model="form.fromScreen" placeholder="Chọn màn hình">-->
+            <!--                <el-option-->
+            <!--                  v-for="(item, index) in listScreens"-->
+            <!--                  :key="index"-->
+            <!--                  :label="item"-->
+            <!--                  :value="index + 1"-->
+            <!--                >-->
+            <!--                </el-option>-->
+            <!--              </el-select>-->
+            <!--            </el-form-item>-->
             <el-form-item class="banner-attri" label="Bình luận" prop="comment">
               <el-input type="textarea" :rows="15" v-model="form.comment"></el-input>
             </el-form-item>
@@ -68,7 +69,8 @@
     <table-pagination
       ref="tableData"
       :url="url"
-      :is-search-date-range="false">
+      :is-search-date-range="false"
+    >
       <template slot="action">
         <el-button
           type="primary"
@@ -100,7 +102,8 @@
               <img
                 v-if="scope.row.avatar"
                 style="width:80px; height: auto"
-                :src="`${config.api.domainUpload}/${scope.row.avatar}`"/>
+                :src="`${scope.row.avatar.includes('http') ? scope.row.avatar : `${config.api.domainUpload}/${scope.row.avatar}`}`"
+              />
             </template>
           </el-table-column>
           <template v-for="column in columnsMap">
@@ -116,14 +119,16 @@
             />
           </template>
           <el-table-column
-            align="center" label="Tác vụ" width="180" fixed="right">
+            align="center" label="Tác vụ" width="180" fixed="right"
+          >
             <template slot-scope="scope">
               <el-tooltip content="Sửa" placement="top">
                 <el-button
                   type="primary"
                   size="mini"
                   plain
-                  @click="handleEdit(scope.row)">
+                  @click="handleEdit(scope.row)"
+                >
                   <i class="el-icon-edit"/>
                 </el-button>
               </el-tooltip>
@@ -155,11 +160,11 @@
 import config from '@/utils/config'
 import moment from 'moment'
 import TablePagination from "@/components/TablePagination"
-import SearchColumn from "@/components/SearchColumn";
-import RatingAPI from "@/api/ratingApi";
-import {validText} from "@/utils/validate";
-import {handleSearchInTable} from "@/utils";
-import vueFilePond, {setOptions} from "vue-filepond"
+import SearchColumn from "@/components/SearchColumn"
+import RatingAPI from "@/api/ratingApi"
+import { validText } from "@/utils/validate"
+import { handleSearchInTable } from "@/utils"
+import vueFilePond, { setOptions } from "vue-filepond"
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
@@ -167,7 +172,7 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview"
 import FilePondPluginImageTransform from "filepond-plugin-image-transform"
 import FilePondPluginImageResize from "filepond-plugin-image-resize"
 import MinIOAPI from '@/api/minioApi'
-import UploadAPI from "@/api/uploadApi";
+import UploadAPI from "@/api/uploadApi"
 
 setOptions({
   styleLoadIndicatorPosition: "right top",
@@ -204,7 +209,7 @@ export default {
       url: config.api.rating,
       config,
       server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             this.form.avatar = data.filename
@@ -250,11 +255,11 @@ export default {
         star: 5,
       },
       formRules: {
-        name: [{required: true, trigger: 'blur', validator: validateText}],
-        star: [{required: true, trigger: 'blur', validator: validateText}],
-        avatar: [{required: true, trigger: 'blur', validator: validateText}],
-        comment: [{required: true, trigger: 'blur', validator: validateText}],
-        fromScreen: [{required: true, trigger: 'blur', validator: validateText}],
+        name: [{ required: true, trigger: 'blur', validator: validateText }],
+        star: [{ required: true, trigger: 'blur', validator: validateText }],
+        avatar: [{ required: true, trigger: 'blur', validator: validateText }],
+        comment: [{ required: true, trigger: 'blur', validator: validateText }],
+        fromScreen: [{ required: true, trigger: 'blur', validator: validateText }],
       },
       dialogFormVisible: false,
       formType: '',
@@ -265,19 +270,9 @@ export default {
     async handleSearch(prop, value) {
       handleSearchInTable(this, prop, value, 'remote')
     },
-    async getImageFilePreview(imgName) {
-      const dt = await MinIOAPI.download(`${config.api.domainUpload}/${imgName}`)
-      const blob = dt.data
-      return new File([blob], config.blobNamePreview, {
-        type: blob.type
-      })
-    },
     async handleEdit(prams) {
       this.formType = 'edit'
-      this.form = {...prams}
-      if (this.form.avatar) {
-        this.imgFile = [await this.getImageFilePreview(this.form.avatar)]
-      }
+      this.form = { ...prams }
       this.dialogFormVisible = true
     },
     async handleDelete(prams) {
