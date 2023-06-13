@@ -40,17 +40,17 @@
             <el-form-item class="banner-attri" label="Đánh giá (sao)" prop="star">
               <el-input-number v-model="form.star" :precision="1" :step="0.1" :max="5" :min="0"></el-input-number>
             </el-form-item>
-            <el-form-item class="banner-attri" label="Màn hình" prop="screen">
-              <el-select v-model="form.fromScreen" placeholder="Chọn màn hình">
-                <el-option
-                  v-for="(item, index) in listScreens"
-                  :key="index"
-                  :label="item"
-                  :value="index + 1"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
+<!--            <el-form-item class="banner-attri" label="Màn hình" prop="screen">-->
+<!--              <el-select v-model="form.fromScreen" placeholder="Chọn màn hình">-->
+<!--                <el-option-->
+<!--                  v-for="(item, index) in listScreens"-->
+<!--                  :key="index"-->
+<!--                  :label="item"-->
+<!--                  :value="index + 1"-->
+<!--                >-->
+<!--                </el-option>-->
+<!--              </el-select>-->
+<!--            </el-form-item>-->
             <el-form-item class="banner-attri" label="Bình luận" prop="comment">
               <el-input type="textarea" :rows="15" v-model="form.comment"></el-input>
             </el-form-item>
@@ -167,6 +167,7 @@ import FilePondPluginImagePreview from "filepond-plugin-image-preview"
 import FilePondPluginImageTransform from "filepond-plugin-image-transform"
 import FilePondPluginImageResize from "filepond-plugin-image-resize"
 import MinIOAPI from '@/api/minioApi'
+import UploadAPI from "@/api/uploadApi";
 
 setOptions({
   styleLoadIndicatorPosition: "right top",
@@ -205,9 +206,8 @@ export default {
       server: {
         process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
-            const data = await MinIOAPI.getPreUrlUpload({name: file.name})
-            await MinIOAPI.upload(data.url, file)
-            this.form.avatar = data.path
+            const data = await UploadAPI.uploadFile(file)
+            this.form.avatar = data.filename
           } else {
             progress(1024, 1024, 1024)
           }
@@ -216,17 +216,17 @@ export default {
         revert: null
       },
       columnsMap: [
-        {
-          label: 'Màn hình',
-          prop: 'fromScreen',
-          type: 'config',
-          minWidth: '90',
-          propConfig: 'fromStatistical'
-        },
+        // {
+        //   label: 'Màn hình',
+        //   prop: 'fromScreen',
+        //   type: 'config',
+        //   minWidth: '90',
+        //   propConfig: 'fromStatistical'
+        // },
         {
           label: 'Đánh giá (sao)',
           prop: 'star',
-          minWidth: '60',
+          minWidth: '100',
         },
         {
           label: 'Bình luận',

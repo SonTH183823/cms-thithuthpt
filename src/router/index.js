@@ -163,7 +163,6 @@ router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const { authorize } = to.meta
   const currentUser = localStorage.getItem(config.userKey) ? JSON.parse(localStorage.getItem(config.userKey)) : {}
-  console.log('aaa', currentUser)
   if (authorize) {
     if (!currentUser.token) {
       // not logged in so redirect to login page with the return url

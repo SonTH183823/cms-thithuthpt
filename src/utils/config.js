@@ -42,7 +42,7 @@ const config = {
     popupForums: `${domainPopupForums}/popups`,
     notification: `${domainNotification}/notification`,
     notificationTemplate: `${domainNotification}/notificationTemplate`,
-    rating: `${domainDecorate}/rate`,
+    rating: `${domain}/rate`,
     minio: `${domainMinIO}/presignedUrl`,
     auth: `${domainAuth}/userCMS`,
     upload: `${domain}/upload`,
