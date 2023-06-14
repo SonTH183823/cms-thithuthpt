@@ -15,8 +15,8 @@
               <el-switch v-model="form.active" :active-value="1" :inactive-value="0" active-color="#13ce66"
                          style="margin-right: 10px;"/>
             </el-form-item>
-            <el-form-item class="banner-attri" label="Tên" prop="name">
-              <el-input v-model="form.name"></el-input>
+            <el-form-item class="banner-attri" label="Tiêu đề" prop="title">
+              <el-input v-model="form.title"></el-input>
             </el-form-item>
             <el-form-item class="banner-attri" label="Hình đại diện" prop="avatar">
               <file-pond
@@ -94,13 +94,13 @@
             min-width="50"
             :index="indexMethod"
           />
-          <el-table-column label="Tên" prop="name" align="center" min-width="80"></el-table-column>
-          <el-table-column label="Hình đại diện" prop="avatar" align="center">
+          <el-table-column label="Tên" prop="title" align="center" min-width="80"></el-table-column>
+          <el-table-column label="Hình ảnh" prop="thumbnail" align="center">
             <template slot-scope="scope">
               <img
-                v-if="scope.row.avatar"
+                v-if="scope.row.thumbnail"
                 style="width:80px; height: auto"
-                :src="`${config.api.domainUpload}/${scope.row.avatar}`"/>
+                :src="`${config.api.domainUpload}/${scope.row.thumbnail}`"/>
             </template>
           </el-table-column>
           <template v-for="column in columnsMap">

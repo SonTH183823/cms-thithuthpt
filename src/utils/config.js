@@ -339,7 +339,13 @@ const config = {
     'Tích Phân - Đạo Hàm',
     'Tổ Hợp - Xác Suất',
     'Loại Khác'
-  ]
+  ],
+  answerConfig: {
+    'A': 1,
+    'B': 2,
+    'C': 3,
+    'D': 4
+  }
 }
 
 export default config

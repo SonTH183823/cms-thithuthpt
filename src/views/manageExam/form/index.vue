@@ -91,9 +91,34 @@
           </el-col>
         </el-form>
       </el-row>
-      <el-row>
-        <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>
-      </el-row>
+<!--      <el-row>-->
+<!--        <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>-->
+<!--        <el-collapse v-for="(item, idx) in listQuestion" v-model="activeNames">-->
+<!--          <el-collapse-item :name="idx.toString()">-->
+<!--            <template slot="title">-->
+<!--              <div style="font-weight: bold; font-size: 18px">Câu {{ idx + 1 }}</div>-->
+<!--            </template>-->
+<!--            <QuestionItem :question="item" :index="idx"/>-->
+<!--            <div style="display: flex; flex-direction: row; margin-left: 10px">-->
+<!--              <el-button-->
+<!--                :disabled="!checkAddNewQuestion()"-->
+<!--                type="primary"-->
+<!--                plain-->
+<!--                icon="el-icon-plus"-->
+<!--                @click="handleAddQuestion(idx)"-->
+<!--              >Thêm mới-->
+<!--              </el-button>-->
+<!--              <el-button-->
+<!--                v-if="checkShowBtnDel()"-->
+<!--                type="danger"-->
+<!--                icon="el-icon-delete"-->
+<!--                @click="handleDelQuestion(idx)"-->
+<!--              >Xóa câu hỏi-->
+<!--              </el-button>-->
+<!--            </div>-->
+<!--          </el-collapse-item>-->
+<!--        </el-collapse>-->
+<!--      </el-row>-->
     </div>
     <el-dialog
       title="Tải ảnh lên"
@@ -124,18 +149,17 @@
 
 <script>
 import config from "@/utils/config"
-import { validText } from "@/utils/validate"
-import NewsApi from "@/api/newsApi"
-import vueFilePond, { setOptions } from 'vue-filepond'
+import {validText} from "@/utils/validate"
+import ExamAPI from "@/api/examApi"
+import vueFilePond, {setOptions} from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
-import MinIOAPI from "@/api/minioApi"
-import EditorComponent from "@/components/Editor"
 import UploadAPI from "@/api/uploadApi"
+import QuestionItem from "@/views/manageExam/question/QuestionItem.vue";
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -157,6 +181,7 @@ setOptions({
 
 export default {
   components: {
+    QuestionItem,
     FilePond
   },
 
@@ -173,8 +198,9 @@ export default {
       hasImg: true,
       isUpload: false,
       dialogVisible: false,
+      activeNames: [],
       server: {
-        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -200,6 +226,7 @@ export default {
         time: 0
       },
       listTypeQuestion: [],
+      listQuestion: [],
       formRules: {
         title: [{
           required: true,
@@ -219,8 +246,8 @@ export default {
           message: 'Vui lòng nhập mô tả bài viết',
           validator: validateText
         }],
-        thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],
-        category: [{ required: true, trigger: 'blur', message: ' ' }]
+        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
+        category: [{required: true, trigger: 'blur', message: ' '}]
       },
       formType: '',
       NewsId: this.$route.params.id,
@@ -231,7 +258,7 @@ export default {
   },
   watch: {
     'formSubmit.category': {
-      handler: function(val) {
+      handler: function (val) {
         this.listTypeQuestion = []
         if (val === 1) {
           for (const item of config.subToanList) {
@@ -259,7 +286,10 @@ export default {
       await this.loadFormEdit()
     } else {
       this.formType = 'create'
-
+      this.listQuestion.push({
+        content: '',
+        answer: config.answerConfig.A
+      })
     }
     this.loadingNews = false
   },
@@ -267,7 +297,7 @@ export default {
     async loadFormEdit() {
       try {
         this.loadingNews = true
-        const data = await NewsApi.getById(this.NewsId)
+        const data = await ExamAPI.getById(this.NewsId)
         this.formSubmit = {
           ...data,
         }
@@ -286,7 +316,7 @@ export default {
     },
     async addImg() {
       if (this.formSubmit.thumbnail) {
-        this.myFiles = [await this.getImageFilePreview(this.formSubmit.thumbnail)]
+        this.myFiles = []
       }
       this.dialogVisibleAddImg = true
     },
@@ -296,13 +326,6 @@ export default {
     onRemoveFile() {
       this.formSubmit.thumbnail = undefined
       this.myFiles = []
-    },
-    async getImageFilePreview(imgName) {
-      const dt = await MinIOAPI.download(`${config.api.domainUpload}/${imgName}`)
-      const blob = dt.data
-      return new File([blob], config.blobNamePreview, {
-        type: blob.type
-      })
     },
     async handleSend() {
       const dataSubmit = {
@@ -319,48 +342,57 @@ export default {
           try {
             this.loadingNews = true
             if (this.formType === 'create') {
-              await NewsApi.create(dataSubmit)
+              await ExamAPI.create(dataSubmit)
             } else {
-              await NewsApi.update(dataSubmit, this.NewsId)
+              await ExamAPI.update(dataSubmit, this.NewsId)
             }
             this.formSubmit = {}
             this.loadingNews = false
           } catch (err) {
             this.loadingNews = false
           }
-          this.$router.push('/quan-ly-tin-tuc/tin-tuc')
+          this.$router.push('/quan-ly-de-thi/danh-sach')
         } else {
           console.log('Error Submit!')
           return false
         }
       })
     },
-    async handleCategory() {
-      const { data } = await NewsApi.getCategoryNews({ perPage: 1000 })
-      this.categoryList = data.map(item => {
-        return {
-          name: item.name,
-          id: item._id
-        }
-      })
-    },
-    async handleTags() {
-      const { data } = await NewsApi.getTagNews({ perPage: 1000 })
-      this.tagList = data.map(item => {
-        return {
-          name: item.name,
-          id: item._id
-        }
-      })
-    },
+    // async handleCategory() {
+    //   const {data} = await ExamAPI.getCategoryNews({perPage: 1000})
+    //   this.categoryList = data.map(item => {
+    //     return {
+    //       name: item.name,
+    //       id: item._id
+    //     }
+    //   })
+    // },
+    // async handleTags() {
+    //   const {data} = await ExamAPI.getTagNews({perPage: 1000})
+    //   this.tagList = data.map(item => {
+    //     return {
+    //       name: item.name,
+    //       id: item._id
+    //     }
+    //   })
+    // },
     handleCancel() {
-      this.$router.push('/quan-ly-tin-tuc/tin-tuc')
-    },
-    handNewsType() {
-      this.$router.push('/quan-ly/loai-tin-tuc')
+      this.$router.push('/quan-ly-de-thi/danh-sach')
     },
     handleHTML(data) {
       this.formSubmit.content = data
+    },
+    handleDelQuestion() {
+
+    },
+    checkShowBtnDel() {
+
+    },
+    handleAddQuestion() {
+
+    },
+    checkAddNewQuestion() {
+
     }
   }
 }
