@@ -30,6 +30,7 @@ const config = {
     rating: `${domain}/rate`,
     exam: `${domain}/exam`,
     question: `${domain}/question`,
+    subject: `${domain}/partSubject`,
     domainSalePolicy,
     domainPointCar,
     domainCar,
