@@ -1,41 +1,39 @@
 import request from '@/utils/request'
 import config from '@/utils/config'
-import queryString from 'querystring'
+import queryString from "query-string";
 
-const ExamAPI = {
+const PartSubjectAPI = {
   create(data) {
     return request({
-      url: `${config.api.exam}`,
+      url: `${config.api.subject}`,
       method: 'post',
       data
     })
   },
   get(params = {}) {
     return request({
-      url: `${config.api.exam}?${queryString.stringify(params)}`,
+      url: `${config.api.subject}?${queryString.stringify(params)}`,
       method: 'get'
     })
   },
   getById(id) {
     return request({
-      url: `${config.api.exam}/${id}`,
-      method: 'get'
+      url: `${config.api.subject}/${id}`,
+      method: 'get',
     })
   },
-  update(data, id) {
+  update(id, data) {
     return request({
-      url: `${config.api.exam}/${id}`,
+      url: `${config.api.subject}/${id}`,
       method: 'put',
-      data: {
-        ...data
-      }
+      data
     })
   },
   delete(id) {
     return request({
-      url: `${config.api.exam}/${id}`,
+      url: `${config.api.subject}/${id}`,
       method: 'delete'
     })
   },
 }
-export default ExamAPI
+export default PartSubjectAPI

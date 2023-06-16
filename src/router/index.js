@@ -83,12 +83,28 @@ const baseRouter = [
     }]
   },
   {
-    path: '/quan-ly-mon-hoc', component: Layout, children: [{
-      path: 'danh-sach',
-      name: 'Quản lý môn học',
-      component: () => import('@/views/managerSubject/index.vue'),
-      meta: {title: 'Quản lý môn học', icon: 'lead_sell', authorize: [config.roleConfig['ADMIN']]},
-    }]
+    path: '/quan-ly-mon-hoc',
+    component: Layout,
+    children: [
+      {
+        path: 'danh-sach',
+        name: 'Quản lý môn học',
+        component: () => import('@/views/managerSubject/index.vue'),
+        meta: {title: 'Quản lý môn học', icon: 'lead_sell', authorize: [config.roleConfig['ADMIN']]},
+      },
+      {
+        path: 'danh-sach-cac-phan',
+        name: 'Quản lý chuyên đề môn học',
+        component: () => import('@/views/managerSubject/partSubject/index.vue'),
+        meta: {
+          title: 'Quản lý chuyên đề môn học',
+          icon: 'el-icon-tickets',
+          authorize: [config.roleConfig['ADMIN']],
+          activeMenu: '/quan-ly-mon-hoc/danh-sach'
+        },
+        hidden: true
+      },
+    ]
   },
   {
     path: '/toeic', component: Layout, children: [{

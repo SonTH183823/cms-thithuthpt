@@ -1,70 +1,5 @@
 <template>
   <div class="app-container">
-    <el-dialog
-      :title="formType === 'create' ? 'Thêm đề thi mới' : 'Chỉnh sửa đề thi'"
-      :visible.sync="dialogFormVisible"
-      :close-on-click-modal="false"
-      :before-close="handleCancel"
-      top="50px"
-      width="60%"
-    >
-      <el-form ref="form" :model="form" :rules="formRules" label-width="60px" label-position="top">
-        <el-row :gutter="20" style="margin-bottom: 20px;">
-          <el-col :xl="12" :lg="12">
-            <el-form-item sortable class="banner-attri" label="Kích hoạt" prop="active">
-              <el-switch v-model="form.active" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                         style="margin-right: 10px;"/>
-            </el-form-item>
-            <el-form-item class="banner-attri" label="Tiêu đề" prop="title">
-              <el-input v-model="form.title"></el-input>
-            </el-form-item>
-            <el-form-item class="banner-attri" label="Hình đại diện" prop="avatar">
-              <file-pond
-                ref="pond"
-                allow-image-preview="true"
-                class-name="file-pond1"
-                name="file"
-                label-idle="Tải lên ảnh"
-                allow-remove="true"
-                accepted-file-types="image/*"
-                label-file-type-not-allowed="Không đúng định dạng ảnh"
-                :files="imgFile"
-                :server="server"
-                credits="false"
-                instant-upload="true"
-                :onremovefile="onRemoveFile"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :xl="12" :lg="12">
-            <el-form-item class="banner-attri" label="Đánh giá (sao)" prop="star">
-              <el-input-number v-model="form.star" :precision="1" :step="0.1" :max="5" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item class="banner-attri" label="Màn hình" prop="screen">
-              <el-select v-model="form.fromScreen" placeholder="Chọn màn hình">
-                <el-option
-                  v-for="(item, index) in listScreens"
-                  :key="index"
-                  :label="item"
-                  :value="index + 1"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item class="banner-attri" label="Bình luận" prop="comment">
-              <el-input type="textarea" :rows="15" v-model="form.comment"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <div style="width: 100%; display: flex; justify-content: flex-end">
-                <el-button @click="handleCancel">Hủy</el-button>
-                <el-button type="primary" @click="handleSubmit">{{ formType === 'create' ? 'Thêm mới' : 'Chỉnh sửa' }}
-                </el-button>
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-    </el-dialog>
     <table-pagination
       ref="tableData"
       :url="url"
@@ -153,68 +88,20 @@
 
 <script>
 import config from '@/utils/config'
-import moment from 'moment'
 import TablePagination from "@/components/TablePagination"
 import SearchColumn from "@/components/SearchColumn";
-import RatingAPI from "@/api/ratingApi";
-import {validText} from "@/utils/validate";
+import ExamAPI from "@/api/examApi";
 import {handleSearchInTable} from "@/utils";
-import vueFilePond, {setOptions} from "vue-filepond"
-import 'filepond/dist/filepond.min.css'
-import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
-import FilePondPluginImagePreview from "filepond-plugin-image-preview"
-import FilePondPluginImageTransform from "filepond-plugin-image-transform"
-import FilePondPluginImageResize from "filepond-plugin-image-resize"
-import MinIOAPI from '@/api/minioApi'
 
-setOptions({
-  styleLoadIndicatorPosition: "right top",
-  styleProgressIndicatorPosition: "right top",
-  styleButtonRemoveItemPosition: "left top",
-  styleButtonProcessItemPosition: "right top",
-  labelFileProcessing: 'Đang tải',
-  labelTapToCancel: 'Bấm để hủy',
-  labelTapToUndo: '',
-  labelFileProcessingComplete: 'Thành công',
-})
-const FilePond = vueFilePond(
-  FilePondPluginFileValidateType,
-  FilePondPluginImagePreview,
-  FilePondPluginImageTransform,
-  FilePondPluginImageResize
-)
-moment.locale('vi')
 export default {
   components: {
     TablePagination,
-    SearchColumn,
-    FilePond,
+    SearchColumn
   },
   data() {
-    const validateText = (rule, value, callback) => {
-      if (!validText(value)) {
-        callback(new Error('Vui lòng nhập đủ trường!'))
-      } else {
-        callback()
-      }
-    }
     return {
       url: config.api.exam,
       config,
-      server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
-          if (!file.name.includes(config.blobNamePreview)) {
-            const data = await MinIOAPI.getPreUrlUpload({name: file.name})
-            await MinIOAPI.upload(data.url, file)
-            this.form.avatar = data.path
-          } else {
-            progress(1024, 1024, 1024)
-          }
-          return load(file)
-        },
-        revert: null
-      },
       columnsMap: [
         {
           label: 'Màn hình',
@@ -240,72 +127,19 @@ export default {
           minWidth: '80',
         },
       ],
-      listScreens: ['Trang chủ', 'Trang bán xe', 'Trang Chứng chỉ chất lượng'],
-      form: {
-        name: '',
-        avatar: '',
-        fromScreen: 1,
-        comment: '',
-        active: 1,
-        star: 5,
-      },
-      formRules: {
-        name: [{required: true, trigger: 'blur', validator: validateText}],
-        star: [{required: true, trigger: 'blur', validator: validateText}],
-        avatar: [{required: true, trigger: 'blur', validator: validateText}],
-        comment: [{required: true, trigger: 'blur', validator: validateText}],
-        fromScreen: [{required: true, trigger: 'blur', validator: validateText}],
-      },
-      dialogFormVisible: false,
-      formType: '',
-      imgFile: [],
     }
   },
   methods: {
     async handleSearch(prop, value) {
       handleSearchInTable(this, prop, value, 'remote')
     },
-    async getImageFilePreview(imgName) {
-      const dt = await MinIOAPI.download(`${config.api.domainUpload}/${imgName}`)
-      const blob = dt.data
-      return new File([blob], config.blobNamePreview, {
-        type: blob.type
-      })
-    },
     async handleDelete(prams) {
       try {
-        await RatingAPI.delete(prams._id)
+        await ExamAPI.delete(prams._id)
         this.$refs.tableData.refreshData('del')
       } catch (err) {
         console.log(err)
       }
-    },
-    handleCancel() {
-      this.dialogFormVisible = false
-      this.refreshData()
-    },
-    async handleSubmit() {
-      await this.$refs.form.validate(async valid => {
-        if (valid) {
-          if (this.formType === 'create') {
-            await RatingAPI.create(this.form)
-            this.$refs.tableData.refreshData()
-            this.refreshData()
-          } else {
-            await RatingAPI.update(this.form._id, this.form)
-            this.$refs.tableData.refreshData('edit')
-            this.refreshData()
-          }
-          this.dialogFormVisible = false
-        } else {
-          console.log('Error Submit!')
-          return false
-        }
-      })
-    },
-    onRemoveFile() {
-      this.form.avatar = undefined
-      this.imgFile = []
     },
     refreshData() {
       this.form = {

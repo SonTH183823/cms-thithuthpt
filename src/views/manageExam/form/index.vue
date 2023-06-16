@@ -60,17 +60,17 @@
           <el-col :xl="12" :md="12">
             <el-form-item class="category-form" label="Môn học" prop="category">
               <el-select
-                v-model="formSubmit.category"
+                v-model="formSubmit.subject"
                 style="display: flex; width: 100%"
                 placeholder="Đề thi môn ..."
               >
                 <el-option
-                  v-for="category in config.subjectConfig"
-                  :key="category.value"
-                  :label="category.label"
-                  :value="category.value"
+                  v-for="subject in config.subjectConfig"
+                  :key="subject.value"
+                  :label="subject.label"
+                  :value="subject.value"
                 >
-                  {{ category.label }}
+                  {{ subject.label }}
                 </el-option>
               </el-select>
             </el-form-item>
@@ -159,7 +159,6 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import UploadAPI from "@/api/uploadApi"
-import QuestionItem from "@/views/manageExam/question/QuestionItem.vue";
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -181,7 +180,6 @@ setOptions({
 
 export default {
   components: {
-    QuestionItem,
     FilePond
   },
 
@@ -218,15 +216,14 @@ export default {
       dialogVisibleAddImg: false,
       formSubmit: {
         title: '',
-        category: 1,
-        active: 1,
+        subject: 1,
+        active: 0,
         thumbnail: '',
         description: '',
         hasNotification: 1,
         time: 0
       },
       listTypeQuestion: [],
-      listQuestion: [],
       formRules: {
         title: [{
           required: true,
@@ -247,17 +244,15 @@ export default {
           validator: validateText
         }],
         thumbnail: [{required: true, trigger: 'blur', message: ' '}],
-        category: [{required: true, trigger: 'blur', message: ' '}]
+        subject: [{required: true, trigger: 'blur', message: ' '}]
       },
       formType: '',
-      NewsId: this.$route.params.id,
+      ExamId: this.$route.params.id,
       loadingNews: false,
-      categoryList: [],
-      tagList: [],
     }
   },
   watch: {
-    'formSubmit.category': {
+    'formSubmit.subject': {
       handler: function (val) {
         this.listTypeQuestion = []
         if (val === 1) {
@@ -276,20 +271,11 @@ export default {
 
   async mounted() {
     this.loadingNews = true
-    // await Promise.all([
-    //     this.handleCategory(),
-    //     this.handleTags()
-    //   ]
-    // )
-    if (this.NewsId !== '0') {
+    if (this.ExamId !== '0') {
       this.formType = 'edit'
       await this.loadFormEdit()
     } else {
       this.formType = 'create'
-      this.listQuestion.push({
-        content: '',
-        answer: config.answerConfig.A
-      })
     }
     this.loadingNews = false
   },
@@ -297,18 +283,10 @@ export default {
     async loadFormEdit() {
       try {
         this.loadingNews = true
-        const data = await ExamAPI.getById(this.NewsId)
+        const data = await ExamAPI.getById(this.ExamId)
         this.formSubmit = {
           ...data,
         }
-        this.formSubmit.category = []
-        data.category.map(item => {
-          this.formSubmit.category.push(item._id)
-        })
-        this.formSubmit.tags = []
-        data.tags?.map(tag => {
-          this.formSubmit.tags.push(tag._id)
-        })
         this.loadingNews = false
       } catch (err) {
         console.log(err)
@@ -344,7 +322,7 @@ export default {
             if (this.formType === 'create') {
               await ExamAPI.create(dataSubmit)
             } else {
-              await ExamAPI.update(dataSubmit, this.NewsId)
+              await ExamAPI.update(dataSubmit, this.ExamId)
             }
             this.formSubmit = {}
             this.loadingNews = false
@@ -358,38 +336,11 @@ export default {
         }
       })
     },
-    // async handleCategory() {
-    //   const {data} = await ExamAPI.getCategoryNews({perPage: 1000})
-    //   this.categoryList = data.map(item => {
-    //     return {
-    //       name: item.name,
-    //       id: item._id
-    //     }
-    //   })
-    // },
-    // async handleTags() {
-    //   const {data} = await ExamAPI.getTagNews({perPage: 1000})
-    //   this.tagList = data.map(item => {
-    //     return {
-    //       name: item.name,
-    //       id: item._id
-    //     }
-    //   })
-    // },
     handleCancel() {
       this.$router.push('/quan-ly-de-thi/danh-sach')
     },
     handleHTML(data) {
       this.formSubmit.content = data
-    },
-    handleDelQuestion() {
-
-    },
-    checkShowBtnDel() {
-
-    },
-    handleAddQuestion() {
-
     },
     checkAddNewQuestion() {
 

@@ -1,69 +1,51 @@
 <template>
   <div class="app-container">
     <el-dialog
-      :title="formType === 'create' ? 'Thêm đánh giá mới' : 'Chỉnh sửa đánh giá'"
+      :title="formType === 'create' ? 'Thêm chuyên đề mới' : 'Chỉnh sửa chuyên đề'"
       :visible.sync="dialogFormVisible"
-      :close-on-click-modal=false
+      :close-on-click-modal="false"
       :before-close="handleCancel"
       top="50px"
-      width="60%"
+      width="40%"
     >
       <el-form ref="form" :model="form" :rules="formRules" label-width="60px" label-position="top">
-        <el-row :gutter="20" style="margin-bottom: 20px;">
-          <el-col :xl="12" :lg="12">
-            <el-form-item sortable class="banner-attri" label="Kích hoạt" prop="active">
-              <el-switch v-model="form.active" :active-value="1" :inactive-value="0" active-color="#13ce66"
-                         style="margin-right: 10px;"
-              />
-            </el-form-item>
-            <el-form-item class="banner-attri" label="Tên" prop="name">
-              <el-input v-model="form.name"></el-input>
-            </el-form-item>
-            <el-form-item class="banner-attri" label="Hình đại diện" prop="avatar">
-              <file-pond
-                ref="pond"
-                allow-image-preview="true"
-                class-name="file-pond1"
-                name="file"
-                label-idle="Tải lên ảnh"
-                allow-remove="true"
-                accepted-file-types="image/*"
-                label-file-type-not-allowed="Không đúng định dạng ảnh"
-                :files="imgFile"
-                :server="server"
-                credits="false"
-                instant-upload="true"
-                :onremovefile="onRemoveFile"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :xl="12" :lg="12">
-            <el-form-item class="banner-attri" label="Đánh giá (sao)" prop="star">
-              <el-input-number v-model="form.star" :precision="1" :step="0.1" :max="5" :min="0"></el-input-number>
-            </el-form-item>
-            <!--            <el-form-item class="banner-attri" label="Màn hình" prop="screen">-->
-            <!--              <el-select v-model="form.fromScreen" placeholder="Chọn màn hình">-->
-            <!--                <el-option-->
-            <!--                  v-for="(item, index) in listScreens"-->
-            <!--                  :key="index"-->
-            <!--                  :label="item"-->
-            <!--                  :value="index + 1"-->
-            <!--                >-->
-            <!--                </el-option>-->
-            <!--              </el-select>-->
-            <!--            </el-form-item>-->
-            <el-form-item class="banner-attri" label="Bình luận" prop="comment">
-              <el-input type="textarea" :rows="15" v-model="form.comment"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <div style="width: 100%; display: flex; justify-content: flex-end">
-                <el-button @click="handleCancel">Hủy</el-button>
-                <el-button type="primary" @click="handleSubmit">{{ formType === 'create' ? 'Thêm mới' : 'Chỉnh sửa' }}
-                </el-button>
-              </div>
-            </el-form-item>
-          </el-col>
-        </el-row>
+        <el-form-item class="banner-attri" label="Môn học">
+          <el-input disabled :value="tableDataSubject(subject).label"></el-input>
+        </el-form-item>
+        <el-form-item class="banner-attri" label="Tên" prop="name">
+          <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item class="banner-attri" label="Hình thumbnail" prop="thumbnail">
+          <div v-if="form.thumbnail">
+            <img
+              alt=""
+              style="width:500px; height: auto; margin-bottom: 10px"
+              :src="`${form.thumbnail.includes('http') ? form.thumbnail : `${config.api.domainUpload}/${form.thumbnail}`}`"
+            />
+          </div>
+          <file-pond
+            ref="pond"
+            allow-image-preview="false"
+            class-name="file-pond1"
+            name="file"
+            label-idle="Tải lên ảnh"
+            allow-remove="true"
+            accepted-file-types="image/*"
+            label-file-type-not-allowed="Không đúng định dạng ảnh"
+            :files="imgFile"
+            :server="server"
+            credits="false"
+            instant-upload="true"
+            :onremovefile="onRemoveFile"
+          />
+        </el-form-item>
+        <el-form-item>
+          <div style="width: 100%; display: flex; justify-content: flex-end">
+            <el-button @click="handleCancel">Hủy</el-button>
+            <el-button type="primary" @click="handleSubmit">{{ formType === 'create' ? 'Thêm mới' : 'Chỉnh sửa' }}
+            </el-button>
+          </div>
+        </el-form-item>
       </el-form>
     </el-dialog>
     <table-pagination
@@ -75,9 +57,18 @@
         <el-button
           type="primary"
           size="medium"
+          @click="handleBack"
+          plain
+        >
+          <i class="el-icon-back" style="margin-right: 10px"/>
+          Quay lại
+        </el-button>
+        <el-button
+          type="primary"
+          size="medium"
           @click="handleAdd"
         >
-          Thêm đánh giá mới
+          Thêm chuyên đề mới
         </el-button>
       </template>
       <template slot="table" slot-scope="scope">
@@ -97,12 +88,18 @@
             :index="indexMethod"
           />
           <el-table-column label="Tên" prop="name" align="center" min-width="80"></el-table-column>
-          <el-table-column label="Hình đại diện" prop="avatar" align="center">
+          <el-table-column label="Môn học" prop="subject" align="center" min-width="80">
+            <template slot-scope="scope">
+              <div>{{ tableDataSubject(subject).label }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="Thumbnail" prop="thumbnail" align="center">
             <template slot-scope="scope">
               <img
-                v-if="scope.row.avatar"
+                v-if="scope.row.thumbnail"
+                alt=""
                 style="width:80px; height: auto"
-                :src="`${scope.row.avatar.includes('http') ? scope.row.avatar : `${config.api.domainUpload}/${scope.row.avatar}`}`"
+                :src="`${scope.row.thumbnail.includes('http') ? scope.row.thumbnail : `${config.api.domainUpload}/${scope.row.thumbnail}`}`"
               />
             </template>
           </el-table-column>
@@ -161,18 +158,18 @@ import config from '@/utils/config'
 import moment from 'moment'
 import TablePagination from "@/components/TablePagination"
 import SearchColumn from "@/components/SearchColumn"
-import RatingAPI from "@/api/ratingApi"
-import { validText } from "@/utils/validate"
-import { handleSearchInTable } from "@/utils"
-import vueFilePond, { setOptions } from "vue-filepond"
+import PartSubjectAPI from "@/api/partSubjectApi"
+import {validText} from "@/utils/validate"
+import {handleSearchInTable} from "@/utils"
+import vueFilePond, {setOptions} from "vue-filepond"
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
 import FilePondPluginImagePreview from "filepond-plugin-image-preview"
 import FilePondPluginImageTransform from "filepond-plugin-image-transform"
 import FilePondPluginImageResize from "filepond-plugin-image-resize"
-import MinIOAPI from '@/api/minioApi'
 import UploadAPI from "@/api/uploadApi"
+import tableDataSubject from "@/views/managerSubject/tableData"
 
 setOptions({
   styleLoadIndicatorPosition: "right top",
@@ -196,6 +193,8 @@ export default {
     TablePagination,
     SearchColumn,
     FilePond,
+    // eslint-disable-next-line vue/no-unused-components
+    tableDataSubject
   },
   data() {
     const validateText = (rule, value, callback) => {
@@ -206,13 +205,13 @@ export default {
       }
     }
     return {
-      url: config.api.subject,
+      url: `${config.api.subject}?subject=${this.$router.currentRoute.query.subject}`,
       config,
       server: {
-        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
-            this.form.avatar = data.filename
+            this.form.thumbnail = data.filename
           } else {
             progress(1024, 1024, 1024)
           }
@@ -220,24 +219,8 @@ export default {
         },
         revert: null
       },
+      subject: this.$router.currentRoute.query.subject,
       columnsMap: [
-        // {
-        //   label: 'Màn hình',
-        //   prop: 'fromScreen',
-        //   type: 'config',
-        //   minWidth: '90',
-        //   propConfig: 'fromStatistical'
-        // },
-        {
-          label: 'Đánh giá (sao)',
-          prop: 'star',
-          minWidth: '100',
-        },
-        {
-          label: 'Bình luận',
-          prop: 'comment',
-          minWidth: '250',
-        },
         {
           label: 'Kích hoạt',
           prop: 'active',
@@ -245,21 +228,15 @@ export default {
           minWidth: '80',
         },
       ],
-      listScreens: ['Trang chủ', 'Trang bán xe', 'Trang Chứng chỉ chất lượng'],
       form: {
         name: '',
-        avatar: '',
-        fromScreen: 1,
-        comment: '',
-        active: 1,
-        star: 5,
+        thumbnail: '',
+        subject: this.$router.currentRoute.query.subject,
+        active: 1
       },
       formRules: {
-        name: [{ required: true, trigger: 'blur', validator: validateText }],
-        star: [{ required: true, trigger: 'blur', validator: validateText }],
-        avatar: [{ required: true, trigger: 'blur', validator: validateText }],
-        comment: [{ required: true, trigger: 'blur', validator: validateText }],
-        fromScreen: [{ required: true, trigger: 'blur', validator: validateText }],
+        name: [{required: true, trigger: 'blur', validator: validateText}],
+        thumbnail: [{required: true, trigger: 'blur', validator: validateText}],
       },
       dialogFormVisible: false,
       formType: '',
@@ -267,17 +244,20 @@ export default {
     }
   },
   methods: {
+    tableDataSubject(index) {
+      return tableDataSubject[index - 1]
+    },
     async handleSearch(prop, value) {
       handleSearchInTable(this, prop, value, 'remote')
     },
     async handleEdit(prams) {
       this.formType = 'edit'
-      this.form = { ...prams }
+      this.form = {...prams}
       this.dialogFormVisible = true
     },
     async handleDelete(prams) {
       try {
-        await RatingAPI.delete(prams._id)
+        await PartSubjectAPI.delete(prams._id)
         this.$refs.tableData.refreshData('del')
       } catch (err) {
         console.log(err)
@@ -291,15 +271,18 @@ export default {
       this.formType = 'create'
       this.dialogFormVisible = true
     },
+    handleBack() {
+      this.$router.back()
+    },
     async handleSubmit() {
       await this.$refs.form.validate(async valid => {
         if (valid) {
           if (this.formType === 'create') {
-            await RatingAPI.create(this.form)
+            await PartSubjectAPI.create(this.form)
             this.$refs.tableData.refreshData()
             this.refreshData()
           } else {
-            await RatingAPI.update(this.form._id, this.form)
+            await PartSubjectAPI.update(this.form._id, this.form)
             this.$refs.tableData.refreshData('edit')
             this.refreshData()
           }
@@ -311,17 +294,14 @@ export default {
       })
     },
     onRemoveFile() {
-      this.form.avatar = undefined
+      this.form.thumbnail = undefined
       this.imgFile = []
     },
     refreshData() {
       this.form = {
         name: '',
-        avatar: '',
-        fromScreen: 1,
-        active: 1,
-        star: 5,
-        comment: '',
+        subject: this.subject,
+        thumbnail: ''
       }
       this.imgFile = []
     },
