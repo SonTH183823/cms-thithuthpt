@@ -133,6 +133,16 @@ const baseRouter = [
           activeMenu: '/quan-ly-de-thi/danh-sach'
         },
         hidden: true
+      },
+      {
+        path: 'cau-hoi/:id',
+        name: 'Biên tập câu hỏi đề thi',
+        component: () => import('@/views/manageExam/question/index'),
+        meta: {
+          authorize: [config.roleConfig['EXAMTEST']],
+          activeMenu: '/quan-ly-de-thi/danh-sach'
+        },
+        hidden: true
       }
     ]
   },

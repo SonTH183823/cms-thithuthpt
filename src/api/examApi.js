@@ -31,6 +31,15 @@ const ExamAPI = {
       }
     })
   },
+  updateQuestion(data, id) {
+    return request({
+      url: `${config.api.exam}/question/${id}`,
+      method: 'put',
+      data: {
+        ...data
+      }
+    })
+  },
   delete(id) {
     return request({
       url: `${config.api.exam}/${id}`,

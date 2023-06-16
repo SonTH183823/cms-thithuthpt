@@ -50,7 +50,7 @@
               <el-input ref="title" v-model="formSubmit.title" name="title" type="textarea"/>
             </el-form-item>
             <el-form-item label="Thời gian làm bài (phút)" prop="time">
-              <el-input-number v-model="formSubmit.time" :min="0" style="width: 100%"/>
+              <el-input-number v-model="formSubmit.time" :min="0" style="width: 100%" :step="30"/>
             </el-form-item>
             <el-form-item label="Mô tả" prop="description">
               <el-input v-model="formSubmit.description" type="textarea" :rows="2"/>
@@ -87,38 +87,39 @@
                   <span>{{ item.value }}</span>
                 </div>
               </div>
+              <div v-if="listTypeQuestion.length === 0" style="align-items: center; width: 100%; display: flex; justify-content: center">Không có dữ liệu</div>
             </el-form-item>
           </el-col>
         </el-form>
       </el-row>
-<!--      <el-row>-->
-<!--        <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>-->
-<!--        <el-collapse v-for="(item, idx) in listQuestion" v-model="activeNames">-->
-<!--          <el-collapse-item :name="idx.toString()">-->
-<!--            <template slot="title">-->
-<!--              <div style="font-weight: bold; font-size: 18px">Câu {{ idx + 1 }}</div>-->
-<!--            </template>-->
-<!--            <QuestionItem :question="item" :index="idx"/>-->
-<!--            <div style="display: flex; flex-direction: row; margin-left: 10px">-->
-<!--              <el-button-->
-<!--                :disabled="!checkAddNewQuestion()"-->
-<!--                type="primary"-->
-<!--                plain-->
-<!--                icon="el-icon-plus"-->
-<!--                @click="handleAddQuestion(idx)"-->
-<!--              >Thêm mới-->
-<!--              </el-button>-->
-<!--              <el-button-->
-<!--                v-if="checkShowBtnDel()"-->
-<!--                type="danger"-->
-<!--                icon="el-icon-delete"-->
-<!--                @click="handleDelQuestion(idx)"-->
-<!--              >Xóa câu hỏi-->
-<!--              </el-button>-->
-<!--            </div>-->
-<!--          </el-collapse-item>-->
-<!--        </el-collapse>-->
-<!--      </el-row>-->
+      <!--      <el-row>-->
+      <!--        <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>-->
+      <!--        <el-collapse v-for="(item, idx) in listQuestion" v-model="activeNames">-->
+      <!--          <el-collapse-item :name="idx.toString()">-->
+      <!--            <template slot="title">-->
+      <!--              <div style="font-weight: bold; font-size: 18px">Câu {{ idx + 1 }}</div>-->
+      <!--            </template>-->
+      <!--            <QuestionItem :question="item" :index="idx"/>-->
+      <!--            <div style="display: flex; flex-direction: row; margin-left: 10px">-->
+      <!--              <el-button-->
+      <!--                :disabled="!checkAddNewQuestion()"-->
+      <!--                type="primary"-->
+      <!--                plain-->
+      <!--                icon="el-icon-plus"-->
+      <!--                @click="handleAddQuestion(idx)"-->
+      <!--              >Thêm mới-->
+      <!--              </el-button>-->
+      <!--              <el-button-->
+      <!--                v-if="checkShowBtnDel()"-->
+      <!--                type="danger"-->
+      <!--                icon="el-icon-delete"-->
+      <!--                @click="handleDelQuestion(idx)"-->
+      <!--              >Xóa câu hỏi-->
+      <!--              </el-button>-->
+      <!--            </div>-->
+      <!--          </el-collapse-item>-->
+      <!--        </el-collapse>-->
+      <!--      </el-row>-->
     </div>
     <el-dialog
       title="Tải ảnh lên"

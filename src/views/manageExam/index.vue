@@ -10,7 +10,7 @@
           size="medium"
           @click="handleAdd"
         >
-          Thêm đánh giá mới
+          Thêm đề thi mới
         </el-button>
       </template>
       <template slot="table" slot-scope="scope">
@@ -50,10 +50,11 @@
               :prop-config="column.propConfig"
             />
           </template>
+          <el-table-column label="Người tạo" prop="createdBy" align="center" min-width="80"></el-table-column>
           <el-table-column
             align="center" label="Tác vụ" width="180" fixed="right">
             <template slot-scope="scope">
-              <el-tooltip content="Sửa" placement="top">
+              <el-tooltip content="Sửa" placement="left">
                 <el-button
                   type="primary"
                   size="mini"
@@ -62,9 +63,17 @@
                   <i class="el-icon-edit"/>
                 </el-button>
               </el-tooltip>
-              <el-tooltip content="Xóa" placement="top">
+              <el-tooltip content="Biên tập câu hỏi" placement="top">
+                <el-button
+                  style="margin-left: 5px; margin-right: 5px"
+                  type="warning"
+                  size="mini"
+                  @click="handleEditQuestion(scope.row)">
+                  <i class="el-icon-question"/>
+                </el-button>
+              </el-tooltip>
+              <el-tooltip content="Xóa" placement="right">
                 <el-popconfirm
-                  style="margin-left: 5px"
                   confirm-button-text="Đồng ý"
                   cancel-button-text="Hủy"
                   title="Bạn có chắc chắn xóa?"
@@ -104,15 +113,15 @@ export default {
       config,
       columnsMap: [
         {
-          label: 'Màn hình',
-          prop: 'fromScreen',
+          label: 'Môn học',
+          prop: 'subject',
           type: 'config',
           minWidth: '90',
-          propConfig: 'fromStatistical'
+          propConfig: 'subjectConfig'
         },
         {
           label: 'Đánh giá (sao)',
-          prop: 'star',
+          prop: 'rating',
           minWidth: '60',
         },
         {
@@ -141,22 +150,14 @@ export default {
         console.log(err)
       }
     },
-    refreshData() {
-      this.form = {
-        name: '',
-        avatar: '',
-        fromScreen: 1,
-        active: 1,
-        star: 5,
-        comment: '',
-      }
-      this.imgFile = []
-    },
     indexMethod(index) {
       return index + 1
     },
     handleEdit(row) {
       this.$router.push('/quan-ly-de-thi/de-thi/' + row._id)
+    },
+    handleEditQuestion(row) {
+      this.$router.push('/quan-ly-de-thi/cau-hoi/' + row._id)
     },
     handleAdd() {
       this.$router.push('/quan-ly-de-thi/de-thi/0')
