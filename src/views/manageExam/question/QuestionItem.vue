@@ -3,7 +3,8 @@
     <el-row>
       <el-col :xl="12" :md="12">
         <div style="padding: 0 20px">
-          <h3 style="font-weight: bold">Đề bài:</h3>
+          <h3 style="font-weight: bold">Đề bài<span
+            style="color: #f56c6c; font-weight: 400; font-size: 13px"> (require)</span></h3>
           <div v-if="question.content" style="position: relative">
             <img
               :src="`${config.api.domainUpload}/${question.content}`"
@@ -34,7 +35,8 @@
           <el-radio :label="3">C</el-radio>
           <el-radio :label="4">D</el-radio>
         </el-radio-group>
-        <h3 style="font-weight: bold">Chuyên đề: </h3>
+        <h3 style="font-weight: bold">Chuyên đề <span style="color: #f56c6c; font-weight: 400; font-size: 13px">(require)</span>
+        </h3>
         <el-select
           v-model="question.category"
           style="display: flex; width: 100%"

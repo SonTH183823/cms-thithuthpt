@@ -21,6 +21,7 @@
                           @update-question="handleUpdateQuestion"/>
             <div style="display: flex; flex-direction: row; margin-left: 10px; justify-content: center">
               <el-button
+                :disabled="!checkAddNewQuestion()"
                 type="primary"
                 plain
                 icon="el-icon-plus"
@@ -262,7 +263,10 @@ export default {
       this.formSubmit.content = data
     },
     checkAddNewQuestion() {
-
+      for (const item of this.listQuestion) {
+        if (item.content === '' || !item.category === '') return false
+      }
+      return true
     },
     handleAddQuestion(index) {
       this.listQuestion.splice(index + 1, 0, {
