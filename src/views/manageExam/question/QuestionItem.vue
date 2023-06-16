@@ -260,7 +260,7 @@ export default {
       if (content && description && explanation && category) {
         return
       }
-      if (this.question.content) {
+      if (this.question.content && category) {
         this.$emit('update-question', {question: this.question, index: this.index})
       }
     }
