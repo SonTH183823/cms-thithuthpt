@@ -1,7 +1,7 @@
 <template>
   <div v-loading="loading">
     <div class="news-form-container">
-      <el-row><h2 style="font-weight: bold">Biên tập đề thi</h2></el-row>
+      <el-row><h2 style="font-weight: bold">Biên tập đề thi Toeic</h2></el-row>
       <el-row style="margin-top: 12px;margin-bottom: 20px">
         <el-col style="display: flex; justify-content: flex-end; margin-right: 10px">
           <el-button @click="handleCancel">Hủy</el-button>
@@ -72,22 +72,6 @@
           </el-col>
 
           <el-col :xl="12" :md="12">
-            <el-form-item class="category-form" label="Môn học" prop="category">
-              <el-select
-                v-model="formSubmit.subject"
-                style="display: flex; width: 100%"
-                placeholder="Đề thi môn ..."
-              >
-                <el-option
-                  v-for="subject in config.subjectConfig"
-                  :key="subject.value"
-                  :label="subject.label"
-                  :value="subject.value"
-                >
-                  {{ subject.label }}
-                </el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item class="category-form" label="Độ khó" prop="level">
               <el-select
                 v-model="formSubmit.level"
@@ -222,7 +206,7 @@ export default {
       dialogVisibleAddImg: false,
       formSubmit: {
         title: '',
-        subject: 1,
+        subject: 9,
         active: 0,
         thumbnail: '',
         description: '',

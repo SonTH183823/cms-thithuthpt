@@ -205,7 +205,6 @@ export default {
     },
     category: {
       handler: function(val, oldVal) {
-        console.log('vao day ko', val, oldVal, this.question.category)
         if (val && val !== oldVal) {
           this.handlePushQuestion('category')
         }

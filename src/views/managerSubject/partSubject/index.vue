@@ -15,7 +15,7 @@
         <el-form-item class="banner-attri" label="Tên" prop="name">
           <el-input v-model="form.name"></el-input>
         </el-form-item>
-        <el-form-item class="banner-attri" label="Hình thumbnail" prop="thumbnail">
+        <el-form-item class="banner-attri" label="Hình thumbnail">
           <div v-if="form.thumbnail">
             <img
               alt=""
@@ -103,21 +103,7 @@
               />
             </template>
           </el-table-column>
-          <template v-for="column in columnsMap">
-            <search-column
-              :key="column.label"
-              :label="column.label"
-              :prop="column.prop"
-              :min-width="column.minWidth"
-              :type="column.type"
-              :fixed="column.fixed"
-              :search-remote="handleSearch"
-              :prop-config="column.propConfig"
-            />
-          </template>
-          <el-table-column
-            align="center" label="Tác vụ" width="180" fixed="right"
-          >
+          <el-table-column align="center" label="Tác vụ" width="180" fixed="right">
             <template slot-scope="scope">
               <el-tooltip content="Sửa" placement="top">
                 <el-button
@@ -159,9 +145,9 @@ import moment from 'moment'
 import TablePagination from "@/components/TablePagination"
 import SearchColumn from "@/components/SearchColumn"
 import PartSubjectAPI from "@/api/partSubjectApi"
-import {validText} from "@/utils/validate"
-import {handleSearchInTable} from "@/utils"
-import vueFilePond, {setOptions} from "vue-filepond"
+import { validText } from "@/utils/validate"
+import { handleSearchInTable } from "@/utils"
+import vueFilePond, { setOptions } from "vue-filepond"
 import 'filepond/dist/filepond.min.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
@@ -208,7 +194,7 @@ export default {
       url: `${config.api.subject}?subject=${this.$router.currentRoute.query.subject}`,
       config,
       server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             this.form.thumbnail = data.filename
@@ -220,14 +206,6 @@ export default {
         revert: null
       },
       subject: this.$router.currentRoute.query.subject,
-      columnsMap: [
-        {
-          label: 'Kích hoạt',
-          prop: 'active',
-          type: 'config',
-          minWidth: '80',
-        },
-      ],
       form: {
         name: '',
         thumbnail: '',
@@ -235,8 +213,7 @@ export default {
         active: 1
       },
       formRules: {
-        name: [{required: true, trigger: 'blur', validator: validateText}],
-        thumbnail: [{required: true, trigger: 'blur', validator: validateText}],
+        name: [{ required: true, trigger: 'blur', validator: validateText }],
       },
       dialogFormVisible: false,
       formType: '',
@@ -252,7 +229,7 @@ export default {
     },
     async handleEdit(prams) {
       this.formType = 'edit'
-      this.form = {...prams}
+      this.form = { ...prams }
       this.dialogFormVisible = true
     },
     async handleDelete(prams) {
