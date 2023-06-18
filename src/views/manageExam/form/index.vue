@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div v-loading="loadingNews" class="news-form-container">
+  <div v-loading="loading">
+    <div class="news-form-container">
       <el-row><h2 style="font-weight: bold">Biên tập đề thi</h2></el-row>
       <el-row style="margin-top: 12px;margin-bottom: 20px">
         <el-col style="display: flex; justify-content: flex-end; margin-right: 10px">
@@ -87,39 +87,14 @@
                   <span>{{ item.value }}</span>
                 </div>
               </div>
-              <div v-if="listTypeQuestion.length === 0" style="align-items: center; width: 100%; display: flex; justify-content: center">Không có dữ liệu</div>
+              <div v-if="listTypeQuestion.length === 0"
+                   style="align-items: center; width: 100%; display: flex; justify-content: center"
+              >Không có dữ liệu
+              </div>
             </el-form-item>
           </el-col>
         </el-form>
       </el-row>
-      <!--      <el-row>-->
-      <!--        <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>-->
-      <!--        <el-collapse v-for="(item, idx) in listQuestion" v-model="activeNames">-->
-      <!--          <el-collapse-item :name="idx.toString()">-->
-      <!--            <template slot="title">-->
-      <!--              <div style="font-weight: bold; font-size: 18px">Câu {{ idx + 1 }}</div>-->
-      <!--            </template>-->
-      <!--            <QuestionItem :question="item" :index="idx"/>-->
-      <!--            <div style="display: flex; flex-direction: row; margin-left: 10px">-->
-      <!--              <el-button-->
-      <!--                :disabled="!checkAddNewQuestion()"-->
-      <!--                type="primary"-->
-      <!--                plain-->
-      <!--                icon="el-icon-plus"-->
-      <!--                @click="handleAddQuestion(idx)"-->
-      <!--              >Thêm mới-->
-      <!--              </el-button>-->
-      <!--              <el-button-->
-      <!--                v-if="checkShowBtnDel()"-->
-      <!--                type="danger"-->
-      <!--                icon="el-icon-delete"-->
-      <!--                @click="handleDelQuestion(idx)"-->
-      <!--              >Xóa câu hỏi-->
-      <!--              </el-button>-->
-      <!--            </div>-->
-      <!--          </el-collapse-item>-->
-      <!--        </el-collapse>-->
-      <!--      </el-row>-->
     </div>
     <el-dialog
       title="Tải ảnh lên"
@@ -150,9 +125,9 @@
 
 <script>
 import config from "@/utils/config"
-import {validText} from "@/utils/validate"
+import { validText } from "@/utils/validate"
 import ExamAPI from "@/api/examApi"
-import vueFilePond, {setOptions} from 'vue-filepond'
+import vueFilePond, { setOptions } from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -199,7 +174,7 @@ export default {
       dialogVisible: false,
       activeNames: [],
       server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -244,17 +219,17 @@ export default {
           message: 'Vui lòng nhập mô tả bài viết',
           validator: validateText
         }],
-        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
-        subject: [{required: true, trigger: 'blur', message: ' '}]
+        thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],
+        subject: [{ required: true, trigger: 'blur', message: ' ' }]
       },
       formType: '',
       ExamId: this.$route.params.id,
-      loadingNews: false,
+      loading: true,
     }
   },
   watch: {
     'formSubmit.subject': {
-      handler: function (val) {
+      handler: function(val) {
         this.listTypeQuestion = []
         if (val === 1) {
           for (const item of config.subToanList) {
@@ -271,24 +246,24 @@ export default {
   },
 
   async mounted() {
-    this.loadingNews = true
+    this.loading = true
     if (this.ExamId !== '0') {
       this.formType = 'edit'
       await this.loadFormEdit()
     } else {
       this.formType = 'create'
     }
-    this.loadingNews = false
+    this.loading = false
   },
   methods: {
     async loadFormEdit() {
       try {
-        this.loadingNews = true
+        this.loading = true
         const data = await ExamAPI.getById(this.ExamId)
         this.formSubmit = {
           ...data,
         }
-        this.loadingNews = false
+        this.loading = false
       } catch (err) {
         console.log(err)
       }
@@ -319,16 +294,16 @@ export default {
         }
         if (valid) {
           try {
-            this.loadingNews = true
+            this.loading = true
             if (this.formType === 'create') {
               await ExamAPI.create(dataSubmit)
             } else {
               await ExamAPI.update(dataSubmit, this.ExamId)
             }
             this.formSubmit = {}
-            this.loadingNews = false
+            this.loading = false
           } catch (err) {
-            this.loadingNews = false
+            this.loading = false
           }
           this.$router.push('/quan-ly-de-thi/danh-sach')
         } else {

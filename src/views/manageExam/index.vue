@@ -29,7 +29,7 @@
             min-width="50"
             :index="indexMethod"
           />
-          <el-table-column label="Tên" prop="title" align="center" min-width="80"></el-table-column>
+          <el-table-column label="Tên" prop="title" align="center" min-width="200"></el-table-column>
           <el-table-column label="Hình ảnh" prop="thumbnail" align="center">
             <template slot-scope="scope">
               <img
@@ -50,7 +50,25 @@
               :prop-config="column.propConfig"
             />
           </template>
-          <el-table-column label="Người tạo" prop="createdBy" align="center" min-width="80"></el-table-column>
+          <el-table-column label="Thời gian làm bài (phút)" prop="time" align="center" min-width="80"></el-table-column>
+          <el-table-column label="Số câu hỏi" prop="createdBy" align="center" min-width="50">
+            <template slot-scope="scope">
+              <div>{{ scope.row.questionIds.length}}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="Người tạo" prop="createdBy" align="center" min-width="60"></el-table-column>
+          <template v-for="column in columnsMap1">
+            <search-column
+              :key="column.label"
+              :label="column.label"
+              :prop="column.prop"
+              :min-width="column.minWidth"
+              :type="column.type"
+              :fixed="column.fixed"
+              :search-remote="handleSearch"
+              :prop-config="column.propConfig"
+            />
+          </template>
           <el-table-column
             align="center" label="Tác vụ" width="180" fixed="right">
             <template slot-scope="scope">
@@ -124,11 +142,8 @@ export default {
           prop: 'rating',
           minWidth: '60',
         },
-        {
-          label: 'Bình luận',
-          prop: 'comment',
-          minWidth: '250',
-        },
+      ],
+      columnsMap1: [
         {
           label: 'Kích hoạt',
           prop: 'active',

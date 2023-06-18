@@ -3,14 +3,30 @@
     <div v-loading="loadingNews" class="news-form-container">
       <el-row><h2 style="font-weight: bold">Biên tập câu hỏi đề thi "{{ formSubmit.title }}"</h2></el-row>
       <el-row style="margin-top: 12px;margin-bottom: 20px">
-        <el-col style="display: flex; justify-content: flex-end; margin-right: 10px">
-          <el-button @click="handleCancel">Hủy</el-button>
-          <el-button type="primary" class="btn-submit" @click="handleSend">
-            {{ formType !== 'edit' ? 'Tạo đề thi' : 'Cập nhật câu hỏi đề thi' }}
-          </el-button>
+        <el-col style="display: flex; justify-content: space-between; margin-right: 10px">
+          <div>
+            <!--            <el-button type="warning" @click="handleCancel"> Upload thư mục câu hỏi</el-button>-->
+            <upload-folder @loading-upload="Uploading" @update-images="updateImage"/>
+          </div>
+          <div style="display: flex; justify-content: flex-end">
+            <el-button @click="handleCancel">Hủy</el-button>
+            <el-button type="primary" class="btn-submit" @click="handleSend">
+              {{ formType !== 'edit' ? 'Tạo đề thi' : 'Cập nhật câu hỏi đề thi' }}
+            </el-button>
+          </div>
         </el-col>
       </el-row>
       <el-row>
+        <div style="flex-direction: row; font-weight: bold">
+          Kích hoạt
+          <el-switch
+            v-model="formSubmit.active"
+            :active-value="1"
+            :inactive-value="0"
+            active-color="#13ce66"
+            style="margin-left: 10px;"
+          />
+        </div>
         <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>
         <el-collapse v-for="(item, idx) in listQuestion" v-model="activeNames">
           <el-collapse-item :name="idx.toString()">
@@ -18,7 +34,8 @@
               <div style="font-weight: bold; font-size: 18px">Câu {{ idx + 1 }}</div>
             </template>
             <QuestionItem :question="item" :index="idx" :list-category="listPartSubject"
-                          @update-question="handleUpdateQuestion"/>
+                          @update-question="handleUpdateQuestion"
+            />
             <div style="display: flex; flex-direction: row; margin-left: 10px; justify-content: center">
               <el-button
                 :disabled="!checkAddNewQuestion()"
@@ -69,9 +86,9 @@
 
 <script>
 import config from "@/utils/config"
-import {validText} from "@/utils/validate"
+import { validText } from "@/utils/validate"
 import ExamAPI from "@/api/examApi"
-import vueFilePond, {setOptions} from 'vue-filepond'
+import vueFilePond, { setOptions } from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -79,8 +96,9 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import UploadAPI from "@/api/uploadApi"
-import QuestionItem from "@/views/manageExam/question/QuestionItem.vue";
-import PartSubjectAPI from "@/api/partSubjectApi";
+import QuestionItem from "@/views/manageExam/question/QuestionItem.vue"
+import PartSubjectAPI from "@/api/partSubjectApi"
+import UploadFolder from "@/views/manageExam/question/UploadFolder.vue"
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -103,7 +121,8 @@ setOptions({
 export default {
   components: {
     FilePond,
-    QuestionItem
+    QuestionItem,
+    UploadFolder
   },
 
   data() {
@@ -116,12 +135,9 @@ export default {
     }
     return {
       myFiles: [],
-      hasImg: true,
-      isUpload: false,
-      dialogVisible: false,
       activeNames: [],
       server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -166,8 +182,8 @@ export default {
           message: 'Vui lòng nhập mô tả bài viết',
           validator: validateText
         }],
-        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
-        subject: [{required: true, trigger: 'blur', message: ' '}]
+        thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],
+        subject: [{ required: true, trigger: 'blur', message: ' ' }]
       },
       formType: '',
       ExamId: this.$route.params.id,
@@ -191,6 +207,23 @@ export default {
     this.loadingNews = false
   },
   methods: {
+    Uploading({ loading }) {
+      this.loadingNews = loading
+    },
+    updateImage({ data }) {
+      this.listQuestion = []
+      for (const item of data) {
+        this.listQuestion.push({
+          content: item,
+          answer: 1,
+          subject: this.formSubmit.subject,
+          category: this.listPartSubject[0]._id,
+          explanation: '',
+          description: ''
+        })
+        this.activeNames.push(this.activeNames.length.toString())
+      }
+    },
     addEmptyQuestion() {
       this.listQuestion.push({
         content: '',
@@ -203,7 +236,7 @@ export default {
       this.activeNames.push(this.activeNames.length.toString())
     },
     async partSubject() {
-      const {data} = await PartSubjectAPI.get({subject: this.formSubmit.subject})
+      const { data } = await PartSubjectAPI.get({ subject: this.formSubmit.subject })
       this.listPartSubject = [...data]
     },
     async loadFormEdit() {
@@ -231,7 +264,7 @@ export default {
       this.formSubmit.thumbnail = undefined
       this.myFiles = []
     },
-    handleUpdateQuestion({question, index}) {
+    handleUpdateQuestion({ question, index }) {
       this.listQuestion[index] = {
         ...this.listQuestion[index],
         ...question

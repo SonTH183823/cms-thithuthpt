@@ -11,11 +11,13 @@ const UploadAPI = {
       data
     })
   },
-  uploadMultipleFile(file) {
+  uploadMultipleFile(files) {
     const data = new FormData()
-    data.append('file', file)
+    for (const item of files) {
+      data.append('files', item)
+    }
     return request({
-      url: `${config.api.upload}`,
+      url: `${config.api.uploadMultiple}`,
       method: 'post',
       data
     })
