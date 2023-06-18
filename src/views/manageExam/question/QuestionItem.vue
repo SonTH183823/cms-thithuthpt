@@ -4,7 +4,8 @@
       <el-col :xl="12" :md="12">
         <div style="padding: 0 20px">
           <h3 style="font-weight: bold">Đề bài<span
-            style="color: #f56c6c; font-weight: 400; font-size: 13px"> (require)</span></h3>
+            style="color: #f56c6c; font-weight: 400; font-size: 13px"
+          > (require)</span></h3>
           <div v-if="question.content" style="position: relative">
             <img
               :src="`${config.api.domainUpload}/${question.content}`"
@@ -38,9 +39,9 @@
         <h3 style="font-weight: bold">Chuyên đề <span style="color: #f56c6c; font-weight: 400; font-size: 13px">(require)</span>
         </h3>
         <el-select
-          v-model="question.category"
+          v-model="category"
           style="display: flex; width: 100%"
-          placeholder="Lựa chọn tags"
+          placeholder="Lựa chọn"
         >
           <el-option
             v-for="c in listCategory"
@@ -116,14 +117,14 @@
 
 <script>
 import config from "@/utils/config"
-import vueFilePond, {setOptions} from 'vue-filepond'
+import vueFilePond, { setOptions } from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
-import UploadAPI from "@/api/uploadApi";
+import UploadAPI from "@/api/uploadApi"
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -171,8 +172,9 @@ export default {
       innerVisible: false,
       imgFile: [],
       explanationFile: [],
+      category: this.question.category,
       server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (this.typeImg === 'content') {
@@ -193,7 +195,7 @@ export default {
   },
   watch: {
     'question.content': {
-      handler: function (val, oldVal) {
+      handler: function(val, oldVal) {
         if (val && val !== oldVal) {
           this.handlePushQuestion()
         }
@@ -201,17 +203,18 @@ export default {
       immediate: false,
       deep: true
     },
-    'question.category': {
-      handler: function (val, oldVal) {
+    category: {
+      handler: function(val, oldVal) {
+        console.log('vao day ko', val, oldVal, this.question.category)
         if (val && val !== oldVal) {
-          this.handlePushQuestion()
+          this.handlePushQuestion('category')
         }
       },
       immediate: false,
       deep: true
     },
     'question.explanation': {
-      handler: function (val, oldVal) {
+      handler: function(val, oldVal) {
         if (val && val !== oldVal) {
           this.handlePushQuestion()
         }
@@ -220,7 +223,7 @@ export default {
       deep: true
     },
     'question.answer': {
-      handler: function (val, oldVal) {
+      handler: function(val, oldVal) {
         if (val && val !== oldVal) {
           this.handlePushQuestion()
         }
@@ -229,9 +232,10 @@ export default {
       deep: true
     },
     'question.description': {
-      handler: function (val, oldVal) {
-        if (val !== oldVal)
+      handler: function(val, oldVal) {
+        if (val !== oldVal) {
           this.handlePushQuestion()
+        }
       },
       immediate: false,
       deep: true
@@ -257,13 +261,21 @@ export default {
     handleAddImgCancel() {
       this.dialogFormVisible = false
     },
-    handlePushQuestion() {
-      const {content, description, explanation, category} = this.question
-      if (content && description && explanation && category) {
+    handlePushQuestion(type) {
+      const { content, description, explanation } = this.question
+      if (content && description && explanation && this.category) {
         return
       }
-      if (this.question.content && category) {
-        this.$emit('update-question', {question: this.question, index: this.index})
+      if (this.question.content && this.category) {
+        const questions = {
+          ...this.question,
+          category: this.category
+        }
+        if (type === 'category') {
+          this.$emit('update-question', { question: questions, index: this.index, cateChange: true })
+        } else {
+          this.$emit('update-question', { question: questions, index: this.index, cateChange: true })
+        }
       }
     }
   }

@@ -27,6 +27,23 @@
             style="margin-left: 10px;"
           />
         </div>
+        <div style="margin-top: 20px; font-weight: bold; font-size: 16px">Phân phối đề thi</div>
+        <div style="display: flex; justify-content: space-between; padding: 10px 30px; font-weight: bold">
+          <span>STT</span>
+          <span>Dạng câu hỏi</span>
+          <span>Số câu hỏi</span>
+        </div>
+        <div v-for="(item,index) in listTypeQuestion" style="padding: 0 60px 0 30px; padding-right: 40px">
+          <div :key="index" style="display: flex; justify-content: space-between">
+            <span>{{ index + 1 }}</span>
+            <span>{{ item.label }}</span>
+            <span>{{ item.value }}</span>
+          </div>
+        </div>
+        <div v-if="listTypeQuestion.length === 0"
+             style="align-items: center; width: 100%; display: flex; justify-content: center"
+        >Không có dữ liệu
+        </div>
         <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>
         <el-collapse v-for="(item, idx) in listQuestion" v-model="activeNames">
           <el-collapse-item :name="idx.toString()">
@@ -238,6 +255,13 @@ export default {
     async partSubject() {
       const { data } = await PartSubjectAPI.get({ subject: this.formSubmit.subject })
       this.listPartSubject = [...data]
+      for (const i of data) {
+        this.listTypeQuestion.push({
+          id: i._id,
+          label: i.name,
+          value: 0
+        })
+      }
     },
     async loadFormEdit() {
       try {
@@ -246,6 +270,7 @@ export default {
         this.formSubmit = {
           ...data,
         }
+        // this.listQuestion = data.questionIds
         this.loadingNews = false
       } catch (err) {
         console.log(err)
@@ -264,16 +289,25 @@ export default {
       this.formSubmit.thumbnail = undefined
       this.myFiles = []
     },
-    handleUpdateQuestion({ question, index }) {
+    handleUpdateQuestion({ question, index, cateChange }) {
       this.listQuestion[index] = {
         ...this.listQuestion[index],
         ...question
+      }
+      if (cateChange) {
+        this.updateTypeQuestion()
+      }
+    },
+    updateTypeQuestion() {
+      for (const i in this.listTypeQuestion) {
+        this.listTypeQuestion[i].value = this.listQuestion.filter((item) => item.category === this.listTypeQuestion[i].id).length
       }
     },
     async handleSend() {
       const dataSubmit = {
         ...this.formSubmit,
-        listQuestion: this.listQuestion
+        listQuestion: this.listQuestion,
+        listTypeQuestion: this.listTypeQuestion
       }
       try {
         this.loadingNews = true

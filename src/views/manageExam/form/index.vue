@@ -74,6 +74,22 @@
                 </el-option>
               </el-select>
             </el-form-item>
+            <el-form-item class="category-form" label="Độ khó" prop="level">
+              <el-select
+                v-model="formSubmit.level"
+                style="display: flex; width: 100%"
+                placeholder="Chọn độ khó..."
+              >
+                <el-option
+                  v-for="item in config.levelConfig"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                  {{ item.label }}
+                </el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="Phân phối đề thi">
               <div style="display: flex; justify-content: space-between; padding-left: 30px; font-weight: bold">
                 <span>STT</span>
@@ -197,7 +213,8 @@ export default {
         thumbnail: '',
         description: '',
         hasNotification: 1,
-        time: 0
+        time: 0,
+        level: 1
       },
       listTypeQuestion: [],
       formRules: {
@@ -211,12 +228,6 @@ export default {
           required: true,
           trigger: 'blur',
           message: 'Vui lòng nhập nội dung bài viết',
-          validator: validateText
-        }],
-        description: [{
-          required: true,
-          trigger: 'blur',
-          message: 'Vui lòng nhập mô tả bài viết',
           validator: validateText
         }],
         thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],

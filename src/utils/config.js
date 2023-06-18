@@ -346,7 +346,25 @@ const config = {
     'B': 2,
     'C': 3,
     'D': 4
-  }
+  },
+  levelConfig: [
+    {
+      value: 1,
+      label: 'Cơ bản'
+    },
+    {
+      value: 2,
+      label: 'Trung bình'
+    },
+    {
+      value: 3,
+      label: 'Nâng cao'
+    },
+    {
+      value: 4,
+      label: 'Khó'
+    }
+  ]
 }
 
 export default config
