@@ -139,7 +139,7 @@ export default {
         },
         {
           label: 'Đánh giá (sao)',
-          prop: 'rating',
+          prop: 'rate',
           minWidth: '60',
         },
       ],

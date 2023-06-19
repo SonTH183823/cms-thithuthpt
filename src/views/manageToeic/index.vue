@@ -11,7 +11,7 @@
           size="medium"
           @click="handleAdd"
         >
-          Thêm đề thi mới
+          Thêm đề thi Toeic mới
         </el-button>
       </template>
       <template slot="table" slot-scope="scope">
@@ -123,7 +123,7 @@ import config from '@/utils/config'
 import TablePagination from "@/components/TablePagination"
 import SearchColumn from "@/components/SearchColumn"
 import ExamAPI from "@/api/examApi"
-import { handleSearchInTable } from "@/utils"
+import {handleSearchInTable} from "@/utils"
 
 export default {
   components: {
@@ -132,12 +132,12 @@ export default {
   },
   data() {
     return {
-      url: `${config.api.exam}?subject=9`,
+      url: `${config.api.toeic}`,
       config,
       columnsMap: [
         {
           label: 'Đánh giá (sao)',
-          prop: 'rating',
+          prop: 'rate',
           minWidth: '60',
         },
       ],

@@ -29,6 +29,7 @@ const config = {
     domainUpload,
     rating: `${domain}/rate`,
     exam: `${domain}/exam`,
+    toeic: `${domain}/examToeic`,
     question: `${domain}/question`,
     subject: `${domain}/partSubject`,
     domainSalePolicy,
@@ -364,6 +365,16 @@ const config = {
       value: 4,
       label: 'Khó'
     }
+  ],
+  cateToeicConfig: [
+    {
+      value: 1,
+      label: 'Bộ đề'
+    },
+    {
+      value: 2,
+      label: 'Đề rút gọn'
+    },
   ]
 }
 

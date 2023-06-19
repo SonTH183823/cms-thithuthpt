@@ -63,9 +63,6 @@
             <el-form-item label="Tiêu đề" prop="title">
               <el-input ref="title" v-model="formSubmit.title" name="title" type="textarea"/>
             </el-form-item>
-            <el-form-item label="Thời gian làm bài (phút)" prop="time">
-              <el-input-number v-model="formSubmit.time" :min="0" style="width: 100%" :step="30"/>
-            </el-form-item>
             <el-form-item label="Mô tả" prop="description">
               <el-input v-model="formSubmit.description" type="textarea" :rows="2"/>
             </el-form-item>
@@ -88,6 +85,9 @@
                 </el-option>
               </el-select>
             </el-form-item>
+            <el-form-item label="Thời gian làm bài (phút)" prop="time">
+              <el-input-number v-model="formSubmit.time" :min="0" style="width: 100%" :step="30"/>
+            </el-form-item>
             <el-form-item class="category-form" label="Độ khó" prop="level">
               <el-select
                 v-model="formSubmit.level"
@@ -104,24 +104,35 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="Phân phối đề thi">
-              <div style="display: flex; justify-content: space-between; padding-left: 30px; font-weight: bold">
-                <span>STT</span>
-                <span>Dạng câu hỏi</span>
-                <span>Số câu hỏi</span>
-              </div>
-              <div v-for="(item,index) in listTypeQuestion" style="padding-left: 40px; padding-right: 30px">
-                <div :key="index" style="display: flex; justify-content: space-between">
-                  <span>{{ index + 1 }}</span>
-                  <span>{{ item.label }}</span>
-                  <span>{{ item.value }}</span>
-                </div>
-              </div>
-              <div v-if="listTypeQuestion.length === 0"
-                   style="align-items: center; width: 100%; display: flex; justify-content: center"
-              >Không có dữ liệu
-              </div>
-            </el-form-item>
+            <div style="display: flex; justify-content: space-between">
+              <el-form-item label="Đánh giá" prop="rate">
+                <el-input-number v-model="formSubmit.rate" :step="0.1" :min="0"/>
+              </el-form-item>
+              <el-form-item label="Lượt xem" prop="rate">
+                <el-input-number v-model="formSubmit.numberView" :min="0"/>
+              </el-form-item>
+              <el-form-item label="Lượt thi" prop="rate">
+                <el-input-number v-model="formSubmit.numberTest" :min="0"/>
+              </el-form-item>
+            </div>
+<!--            <el-form-item label="Phân phối đề thi">-->
+<!--              <div style="display: flex; justify-content: space-between; padding-left: 30px; font-weight: bold">-->
+<!--                <span>STT</span>-->
+<!--                <span>Dạng câu hỏi</span>-->
+<!--                <span>Số câu hỏi</span>-->
+<!--              </div>-->
+<!--              <div v-for="(item,index) in listTypeQuestion" style="padding-left: 40px; padding-right: 30px">-->
+<!--                <div :key="index" style="display: flex; justify-content: space-between">-->
+<!--                  <span>{{ index + 1 }}</span>-->
+<!--                  <span>{{ item.label }}</span>-->
+<!--                  <span>{{ item.value }}</span>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div v-if="listTypeQuestion.length === 0"-->
+<!--                   style="align-items: center; width: 100%; display: flex; justify-content: center"-->
+<!--              >Không có dữ liệu-->
+<!--              </div>-->
+<!--            </el-form-item>-->
           </el-col>
         </el-form>
       </el-row>
@@ -155,9 +166,9 @@
 
 <script>
 import config from "@/utils/config"
-import { validText } from "@/utils/validate"
+import {validText} from "@/utils/validate"
 import ExamAPI from "@/api/examApi"
-import vueFilePond, { setOptions } from 'vue-filepond'
+import vueFilePond, {setOptions} from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -204,7 +215,7 @@ export default {
       dialogVisible: false,
       activeNames: [],
       server: {
-        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -229,7 +240,10 @@ export default {
         hasNotification: 1,
         time: 0,
         level: 1,
-        outstanding: 0
+        outstanding: 0,
+        rate: 5,
+        numberView: 12,
+        numberTest: 2
       },
       listTypeQuestion: [],
       formRules: {
@@ -245,8 +259,8 @@ export default {
           message: 'Vui lòng nhập nội dung bài viết',
           validator: validateText
         }],
-        thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],
-        subject: [{ required: true, trigger: 'blur', message: ' ' }]
+        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
+        subject: [{required: true, trigger: 'blur', message: ' '}]
       },
       formType: '',
       ExamId: this.$route.params.id,
@@ -255,7 +269,7 @@ export default {
   },
   watch: {
     'formSubmit.subject': {
-      handler: function(val) {
+      handler: function (val) {
         this.listTypeQuestion = []
         if (val === 1) {
           for (const item of config.subToanList) {
@@ -286,9 +300,7 @@ export default {
       try {
         this.loading = true
         const data = await ExamAPI.getById(this.ExamId)
-        this.formSubmit = {
-          ...data,
-        }
+        this.formSubmit = {...data}
         this.loading = false
       } catch (err) {
         console.log(err)
