@@ -85,7 +85,23 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="Link tài liệu" >
+            <el-form-item class="category-form" label="Phân loại" prop="category">
+              <el-select
+                v-model="formSubmit.category"
+                style="display: flex; width: 100%"
+                placeholder=""
+              >
+                <el-option
+                  v-for="c in category"
+                  :key="c._id"
+                  :label="c.name"
+                  :value="c._id"
+                >
+                  {{ c.name }}
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Link tài liệu">
               <el-input v-model="formSubmit.link" name="title" type="textarea"/>
             </el-form-item>
             <div style="display: flex; justify-content: space-between">
@@ -129,9 +145,9 @@
 
 <script>
 import config from "@/utils/config"
-import {validText} from "@/utils/validate"
+import { validText } from "@/utils/validate"
 import DocumentAPI from "@/api/documentApi"
-import vueFilePond, {setOptions} from 'vue-filepond'
+import vueFilePond, { setOptions } from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -139,6 +155,7 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import UploadAPI from "@/api/uploadApi"
+import PartSubjectAPI from "@/api/partSubjectApi"
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -178,7 +195,7 @@ export default {
       dialogVisible: false,
       activeNames: [],
       server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -197,6 +214,7 @@ export default {
       formSubmit: {
         title: '',
         subject: 1,
+        category: '',
         active: 0,
         thumbnail: '',
         description: '',
@@ -206,7 +224,7 @@ export default {
         numberView: 12,
         link: ''
       },
-      listTypeQuestion: [],
+      category: [],
       formRules: {
         title: [{
           required: true,
@@ -220,8 +238,9 @@ export default {
           message: 'Vui lòng nhập nội dung bài viết',
           validator: validateText
         }],
-        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
-        subject: [{required: true, trigger: 'blur', message: ' '}]
+        thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],
+        subject: [{ required: true, trigger: 'blur', message: ' ' }],
+        category: [{ required: true, trigger: 'blur', message: 'Hãy chọn category' }],
       },
       formType: '',
       DocumentID: this.$route.params.id,
@@ -230,14 +249,12 @@ export default {
   },
   watch: {
     'formSubmit.subject': {
-      handler: function (val) {
-        this.listTypeQuestion = []
-        if (val === 1) {
-          for (const item of config.subToanList) {
-            this.listTypeQuestion.push({
-              label: item,
-              value: 5
-            })
+      handler: async function(val, oldVal) {
+        if (val !== oldVal) {
+          this.category = []
+          const res = await PartSubjectAPI.get({ subject: val })
+          if (res.data) {
+            this.category = res.data
           }
         }
       },
@@ -245,7 +262,6 @@ export default {
       deep: true
     },
   },
-
   async mounted() {
     this.loading = true
     if (this.DocumentID !== '0') {
@@ -261,7 +277,7 @@ export default {
       try {
         this.loading = true
         const data = await DocumentAPI.getById(this.DocumentID)
-        this.formSubmit = {...data}
+        this.formSubmit = { ...data }
         this.loading = false
       } catch (err) {
         console.log(err)

@@ -82,7 +82,7 @@
                   <i class="el-icon-edit"/>
                 </el-button>
               </el-tooltip>
-              <el-tooltip content="Xóa" placement="right">
+              <el-tooltip content="Xóa" placement="top">
                 <el-popconfirm
                   confirm-button-text="Đồng ý"
                   cancel-button-text="Hủy"
