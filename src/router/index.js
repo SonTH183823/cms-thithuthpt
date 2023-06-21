@@ -160,6 +160,28 @@ const baseRouter = [
     ]
   },
   {
+    path: '/quan-ly-tai-lieu',
+    component: Layout,
+    children: [
+      {
+        path: 'danh-sach',
+        name: 'Quản lý tài liệu',
+        component: () => import('@/views/manageDocument/index.vue'),
+        meta: { title: 'Quản lý tài liệu', icon: 'el-icon-tickets', authorize: [config.roleConfig['DOCUMENT']] },
+      },
+      {
+        path: 'tai-lieu/:id',
+        name: 'Biên tập tài liệu',
+        component: () => import('@/views/manageDocument/form/index'),
+        meta: {
+          authorize: [config.roleConfig['DOCUMENT']],
+          activeMenu: '/quan-ly-tai-lieu/danh-sach'
+        },
+        hidden: true
+      }
+    ]
+  },
+  {
     path: '/danh-gia', component: Layout, children: [{
       path: 'danh-sach',
       name: 'Quản lý đánh giá',

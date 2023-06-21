@@ -29,6 +29,7 @@ const config = {
     domainUpload,
     rating: `${domain}/rate`,
     exam: `${domain}/exam`,
+    document: `${domain}/document`,
     toeic: `${domain}/examToeic`,
     question: `${domain}/question`,
     subject: `${domain}/partSubject`,
@@ -259,7 +260,7 @@ const config = {
   ],
   roleConfig: {
     NEWS: 1,
-    DOCUMENTS: 2,
+    DOCUMENT: 2,
     TOEIC: 3,
     EXAMTEST: 4,
     INTRODUCTION: 5,
