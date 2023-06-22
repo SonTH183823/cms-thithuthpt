@@ -69,23 +69,6 @@
           </el-col>
 
           <el-col :xl="12" :md="12">
-            <el-form-item class="category-form" label="Môn học" prop="category">
-              <el-select
-                v-model="formSubmit.subject"
-                style="display: flex; width: 100%"
-                placeholder="Đề thi môn ..."
-                disabled
-              >
-                <el-option
-                  v-for="subject in config.subjectConfig"
-                  :key="subject.value"
-                  :label="subject.label"
-                  :value="subject.value"
-                >
-                  {{ subject.label }}
-                </el-option>
-              </el-select>
-            </el-form-item>
             <el-form-item class="category-form" label="Kiểu" prop="category">
               <el-select
                 v-model="formSubmit.cateToeic"
@@ -101,9 +84,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="Thời gian làm bài (phút)" prop="time">
-              <el-input-number v-model="formSubmit.time" :min="0" style="width: 100%" :step="30"/>
-            </el-form-item>
+
             <!--            <el-form-item class="category-form" label="Độ khó" prop="level">-->
             <!--              <el-select-->
             <!--                v-model="formSubmit.level"-->
@@ -120,7 +101,10 @@
             <!--                </el-option>-->
             <!--              </el-select>-->
             <!--            </el-form-item>-->
-            <div style="display: flex; justify-content: space-evenly">
+            <div style="display: flex; justify-content: space-between">
+              <el-form-item label="Thời gian làm bài (phút)" prop="time">
+                <el-input-number v-model="formSubmit.time" :min="0" :step="30"/>
+              </el-form-item>
               <el-form-item label="Số câu Listening" prop="numberListening">
                 <el-input-number v-model="formSubmit.numberListening" :min="1" :step="10" :max="100"
                                  :disabled="formSubmit.cateToeic===1"/>
