@@ -22,6 +22,12 @@ const ExamAPI = {
       method: 'get'
     })
   },
+  getExamHasQuestionById(id) {
+    return request({
+      url: `${config.api.toeic}/question/${id}`,
+      method: 'get'
+    })
+  },
   update(data, id) {
     return request({
       url: `${config.api.exam}/${id}`,
@@ -34,6 +40,15 @@ const ExamAPI = {
   updateQuestion(data, id) {
     return request({
       url: `${config.api.exam}/question/${id}`,
+      method: 'put',
+      data: {
+        ...data
+      }
+    })
+  },
+  updateQuestionToeic(data, id) {
+    return request({
+      url: `${config.api.toeic}/question/${id}`,
       method: 'put',
       data: {
         ...data

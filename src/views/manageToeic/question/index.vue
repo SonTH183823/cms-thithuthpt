@@ -1,12 +1,19 @@
 <template>
   <div>
     <div v-loading="loadingNews" class="news-form-container">
-      <el-row><h2 style="font-weight: bold">Biên tập câu hỏi đề thi "{{ formSubmit.title }}"</h2></el-row>
+      <el-row><h2 style="font-weight: bold">Biên tập câu hỏi {{ typeQuestion }} đề thi "{{ formSubmit.title }}"</h2>
+      </el-row>
       <el-row style="margin-top: 12px;margin-bottom: 20px">
-        <el-col style="display: flex; justify-content: space-between; margin-right: 10px">
-          <div>
+        <el-col style="margin-right: 10px">
+          <div style="color:#f56c6c;">
             <!--            <el-button type="warning" @click="handleCancel"> Upload thư mục câu hỏi</el-button>-->
-            <upload-folder @loading-upload="Uploading" @update-images="updateImage"/>
+            <!--            <upload-folder @loading-upload="Uploading" @update-images="updateImage"/>-->
+            Lưu ý: Cần phải nhập đủ
+            {{ typeQuestion === 'Listening' ? formSubmit.numberListening : formSubmit.numberReading }} câu hỏi
+            {{ typeQuestion }}
+          </div>
+          <div>
+            Số câu hỏi hiện tại là {{ this.listQuestion.length }}
           </div>
           <div style="display: flex; justify-content: flex-end">
             <el-button @click="handleCancel">Hủy</el-button>
@@ -26,23 +33,6 @@
             active-color="#13ce66"
             style="margin-left: 10px;"
           />
-        </div>
-        <div style="margin-top: 20px; font-weight: bold; font-size: 16px">Phân phối đề thi</div>
-        <div style="display: flex; justify-content: space-between; padding: 10px 30px; font-weight: bold">
-          <span>STT</span>
-          <span>Dạng câu hỏi</span>
-          <span>Số câu hỏi</span>
-        </div>
-        <div v-for="(item,index) in listTypeQuestion" style="padding: 0 60px 0 30px; padding-right: 40px">
-          <div :key="index" style="display: flex; justify-content: space-between">
-            <span>{{ index + 1 }}</span>
-            <span>{{ item.label }}</span>
-            <span>{{ item.value }}</span>
-          </div>
-        </div>
-        <div v-if="listTypeQuestion.length === 0"
-             style="align-items: center; width: 100%; display: flex; justify-content: center"
-        >Không có dữ liệu
         </div>
         <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>
         <el-collapse v-for="(item, idx) in listQuestion" v-model="activeNames">
@@ -103,9 +93,9 @@
 
 <script>
 import config from "@/utils/config"
-import { validText } from "@/utils/validate"
+import {validText} from "@/utils/validate"
 import ExamAPI from "@/api/examApi"
-import vueFilePond, { setOptions } from 'vue-filepond'
+import vueFilePond, {setOptions} from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -113,9 +103,8 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import UploadAPI from "@/api/uploadApi"
-import QuestionItem from "@/views/manageExam/question/QuestionItem.vue"
+import QuestionItem from "@/views/manageToeic/question/QuestionItem.vue"
 import PartSubjectAPI from "@/api/partSubjectApi"
-import UploadFolder from "@/views/manageExam/question/UploadFolder.vue"
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -138,8 +127,7 @@ setOptions({
 export default {
   components: {
     FilePond,
-    QuestionItem,
-    UploadFolder
+    QuestionItem
   },
 
   data() {
@@ -154,7 +142,7 @@ export default {
       myFiles: [],
       activeNames: [],
       server: {
-        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -172,7 +160,7 @@ export default {
       dialogVisibleAddImg: false,
       formSubmit: {
         title: '',
-        subject: 1,
+        subject: 9,
         active: 0,
         thumbnail: '',
         description: '',
@@ -180,7 +168,6 @@ export default {
         time: 0
       },
       numberQuestion: 0,
-      listTypeQuestion: [],
       formRules: {
         title: [{
           required: true,
@@ -200,14 +187,16 @@ export default {
           message: 'Vui lòng nhập mô tả bài viết',
           validator: validateText
         }],
-        thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],
-        subject: [{ required: true, trigger: 'blur', message: ' ' }]
+        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
+        subject: [{required: true, trigger: 'blur', message: ' '}]
       },
       formType: '',
+      typeQuestion: this.$route.query.type,
       ExamId: this.$route.params.id,
       loadingNews: false,
       listQuestion: [],
-      listPartSubject: []
+      listPartSubject: [],
+      idPartSubject: ''
     }
   },
   watch: {},
@@ -216,26 +205,26 @@ export default {
     this.loadingNews = true
     if (this.ExamId !== '0') {
       this.formType = 'edit'
-      this.addEmptyQuestion()
-      await this.loadFormEdit()
       await this.partSubject()
+      await this.loadFormEdit()
+      await this.addEmptyQuestion()
     } else {
       this.formType = 'create'
     }
     this.loadingNews = false
   },
   methods: {
-    Uploading({ loading }) {
+    Uploading({loading}) {
       this.loadingNews = loading
     },
-    updateImage({ data }) {
+    updateImage({data}) {
       this.listQuestion = []
       for (const item of data) {
         this.listQuestion.push({
           content: item,
           answer: 1,
           subject: this.formSubmit.subject,
-          category: this.listPartSubject[0]._id,
+          category: this.idPartSubject,
           explanation: '',
           description: ''
         })
@@ -243,36 +232,38 @@ export default {
       }
     },
     addEmptyQuestion() {
-      this.listQuestion.push({
-        content: '',
-        answer: 1,
-        subject: this.formSubmit.subject,
-        category: '',
-        explanation: '',
-        description: ''
-      })
-      this.activeNames.push(this.activeNames.length.toString())
+      if (this.listQuestion.length === 0) {
+        this.listQuestion.push({
+          content: '',
+          answer: 1,
+          subject: this.formSubmit.subject,
+          category: this.idPartSubject,
+          explanation: '',
+          description: ''
+        })
+        this.activeNames.push(this.activeNames.length.toString())
+      } else {
+        for (const index of this.listQuestion) {
+          this.activeNames.push(this.activeNames.length.toString())
+        }
+      }
     },
     async partSubject() {
-      const { data } = await PartSubjectAPI.get({ subject: this.formSubmit.subject })
+      const {data} = await PartSubjectAPI.get({subject: 9})
       this.listPartSubject = [...data]
       for (const i of data) {
-        this.listTypeQuestion.push({
-          id: i._id,
-          label: i.name,
-          value: 0
-        })
+        if (i.name === this.typeQuestion) {
+          this.idPartSubject = i._id
+          break
+        }
       }
     },
     async loadFormEdit() {
       try {
         this.loadingNews = true
-        const data = await ExamAPI.getById(this.ExamId)
-        this.formSubmit = {
-          ...data,
-        }
-        this.numberQuestion = data.numberQuestion
-        // this.listQuestion = data.questionIds
+        const data = await ExamAPI.getExamHasQuestionById(this.ExamId)
+        this.formSubmit = {...data}
+        this.listQuestion = this.typeQuestion === 'Listening' ? data.listeningQuestion : data.readingQuestion
         this.loadingNews = false
       } catch (err) {
         console.log(err)
@@ -291,42 +282,37 @@ export default {
       this.formSubmit.thumbnail = undefined
       this.myFiles = []
     },
-    handleUpdateQuestion({ question, index, cateChange }) {
+    handleUpdateQuestion({question, index}) {
       this.listQuestion[index] = {
         ...this.listQuestion[index],
         ...question
       }
-      if (cateChange) {
-        this.updateTypeQuestion()
-      }
-    },
-    updateTypeQuestion() {
-      for (const i in this.listTypeQuestion) {
-        this.listTypeQuestion[i].value = this.listQuestion.filter((item) => item.category === this.listTypeQuestion[i].id).length
-      }
     },
     async handleSend() {
-      const dataSubmit = {
-        ...this.formSubmit,
-        listQuestion: this.listQuestion,
-        listTypeQuestion: this.listTypeQuestion
-      }
-      try {
-        this.loadingNews = true
-        if (this.formType === 'create') {
-          await ExamAPI.create(dataSubmit)
-        } else {
-          await ExamAPI.updateQuestion(dataSubmit, this.ExamId)
+      const max = this.typeQuestion === 'Listening' ? this.formSubmit.numberListening : this.formSubmit.numberReading
+      if (this.listQuestion.length === max) {
+        const dataSubmit = {
+          ...this.formSubmit,
+          listQuestion: this.listQuestion,
+          type: this.typeQuestion
         }
-        this.formSubmit = {}
-        this.loadingNews = false
-      } catch (err) {
-        this.loadingNews = false
+        try {
+          this.loadingNews = true
+          if (this.formType === 'create') {
+            await ExamAPI.create(dataSubmit)
+          } else {
+            await ExamAPI.updateQuestionToeic(dataSubmit, this.ExamId)
+          }
+          this.formSubmit = {}
+          this.loadingNews = false
+        } catch (err) {
+          this.loadingNews = false
+        }
+        this.$router.push('/quan-ly-toeic/danh-sach')
       }
-      this.$router.push('/quan-ly-de-thi/danh-sach')
     },
     handleCancel() {
-      this.$router.push('/quan-ly-de-thi/danh-sach')
+      this.$router.push('/quan-ly-toeic/danh-sach')
     },
     handleHTML(data) {
       this.formSubmit.content = data
@@ -342,7 +328,7 @@ export default {
         content: '',
         answer: 1,
         subject: this.formSubmit.subject,
-        category: '',
+        category: this.idPartSubject,
         explanation: '',
         description: ''
       })

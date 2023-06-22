@@ -104,22 +104,32 @@
             <el-form-item label="Thời gian làm bài (phút)" prop="time">
               <el-input-number v-model="formSubmit.time" :min="0" style="width: 100%" :step="30"/>
             </el-form-item>
-            <el-form-item class="category-form" label="Độ khó" prop="level">
-              <el-select
-                v-model="formSubmit.level"
-                style="display: flex; width: 100%"
-                placeholder="Chọn độ khó..."
-              >
-                <el-option
-                  v-for="item in config.levelConfig"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                  {{ item.label }}
-                </el-option>
-              </el-select>
-            </el-form-item>
+            <!--            <el-form-item class="category-form" label="Độ khó" prop="level">-->
+            <!--              <el-select-->
+            <!--                v-model="formSubmit.level"-->
+            <!--                style="display: flex; width: 100%"-->
+            <!--                placeholder="Chọn độ khó..."-->
+            <!--              >-->
+            <!--                <el-option-->
+            <!--                  v-for="item in config.levelConfig"-->
+            <!--                  :key="item.value"-->
+            <!--                  :label="item.label"-->
+            <!--                  :value="item.value"-->
+            <!--                >-->
+            <!--                  {{ item.label }}-->
+            <!--                </el-option>-->
+            <!--              </el-select>-->
+            <!--            </el-form-item>-->
+            <div style="display: flex; justify-content: space-evenly">
+              <el-form-item label="Số câu Listening" prop="numberListening">
+                <el-input-number v-model="formSubmit.numberListening" :min="1" :step="10" :max="100"
+                                 :disabled="formSubmit.cateToeic===1"/>
+              </el-form-item>
+              <el-form-item label="Số câu Reading" prop="numberReading">
+                <el-input-number v-model="formSubmit.numberReading" :min="1" :step="10" :max="100"
+                                 :disabled="formSubmit.cateToeic===1"/>
+              </el-form-item>
+            </div>
             <div style="display: flex; justify-content: space-between">
               <el-form-item label="Đánh giá" prop="rate">
                 <el-input-number v-model="formSubmit.rate" :step="0.1" :min="0" :max="5"/>
@@ -131,24 +141,6 @@
                 <el-input-number v-model="formSubmit.numberTest" :min="0"/>
               </el-form-item>
             </div>
-            <!--            <el-form-item label="Phân phối đề thi">-->
-            <!--              <div style="display: flex; justify-content: space-between; padding-left: 30px; font-weight: bold">-->
-            <!--                <span>STT</span>-->
-            <!--                <span>Dạng câu hỏi</span>-->
-            <!--                <span>Số câu hỏi</span>-->
-            <!--              </div>-->
-            <!--              <div v-for="(item,index) in listTypeQuestion" style="padding-left: 40px; padding-right: 30px">-->
-            <!--                <div :key="index" style="display: flex; justify-content: space-between">-->
-            <!--                  <span>{{ index + 1 }}</span>-->
-            <!--                  <span>{{ item.label }}</span>-->
-            <!--                  <span>{{ item.value }}</span>-->
-            <!--                </div>-->
-            <!--              </div>-->
-            <!--              <div v-if="listTypeQuestion.length === 0"-->
-            <!--                   style="align-items: center; width: 100%; display: flex; justify-content: center"-->
-            <!--              >Không có dữ liệu-->
-            <!--              </div>-->
-            <!--            </el-form-item>-->
           </el-col>
         </el-form>
       </el-row>
@@ -254,13 +246,15 @@ export default {
         thumbnail: '',
         description: '',
         hasNotification: 1,
-        time: 0,
+        time: 120,
         level: 1,
         outstanding: 0,
         rate: 5,
         numberView: 12,
         numberTest: 2,
-        cateToeic: 1
+        cateToeic: 1,
+        numberListening: 100,
+        numberReading: 100,
       },
       listTypeQuestion: [],
       formRules: {
@@ -277,7 +271,9 @@ export default {
           validator: validateText
         }],
         thumbnail: [{required: true, trigger: 'blur', message: ' '}],
-        subject: [{required: true, trigger: 'blur', message: ' '}]
+        subject: [{required: true, trigger: 'blur', message: ' '}],
+        numberReading: [{required: true, trigger: 'blur', message: ' '}],
+        numberListening: [{required: true, trigger: 'blur', message: ' '}],
       },
       formType: '',
       ExamId: this.$route.params.id,
@@ -285,16 +281,11 @@ export default {
     }
   },
   watch: {
-    'formSubmit.subject': {
+    'formSubmit.cateToeic': {
       handler: function (val) {
-        this.listTypeQuestion = []
         if (val === 1) {
-          for (const item of config.subToanList) {
-            this.listTypeQuestion.push({
-              label: item,
-              value: 5
-            })
-          }
+          this.formSubmit.numberListening = 100
+          this.formSubmit.numberReading = 100
         }
       },
       immediate: true,

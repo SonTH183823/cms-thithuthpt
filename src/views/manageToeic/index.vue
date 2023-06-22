@@ -72,7 +72,7 @@
             />
           </template>
           <el-table-column
-            align="center" label="Tác vụ" width="180" fixed="right"
+            align="center" label="Tác vụ" width="220" fixed="right"
           >
             <template slot-scope="scope">
               <el-tooltip content="Sửa" placement="left">
@@ -85,17 +85,27 @@
                   <i class="el-icon-edit"/>
                 </el-button>
               </el-tooltip>
-              <el-tooltip content="Biên tập câu hỏi" placement="top">
+              <el-tooltip content="Biên tập câu hỏi Listening" placement="top">
                 <el-button
                   style="margin-left: 5px; margin-right: 5px"
                   type="warning"
                   size="mini"
-                  @click="handleEditQuestion(scope.row)"
+                  @click="handleEditQuestion(scope.row, 'Listening')"
+                >
+                  <i class="el-icon-headset"/>
+                </el-button>
+              </el-tooltip>
+              <el-tooltip content="Biên tập câu hỏi Reading" placement="bottom">
+                <el-button
+                  style="margin-left: 5px; margin-right: 5px"
+                  type="success"
+                  size="mini"
+                  @click="handleEditQuestion(scope.row, 'Reading')"
                 >
                   <i class="el-icon-question"/>
                 </el-button>
               </el-tooltip>
-              <el-tooltip content="Xóa" placement="right">
+              <el-tooltip content="Xóa" placement="top">
                 <el-popconfirm
                   confirm-button-text="Đồng ý"
                   cancel-button-text="Hủy"
@@ -136,6 +146,13 @@ export default {
       config,
       columnsMap: [
         {
+          label: 'Phân loại',
+          prop: 'cateToeic',
+          minWidth: '60',
+          type: 'config',
+          propConfig: 'caeToeicConfig'
+        },
+        {
           label: 'Đánh giá (sao)',
           prop: 'rate',
           minWidth: '60',
@@ -169,8 +186,8 @@ export default {
     handleEdit(row) {
       this.$router.push('/quan-ly-toeic/de-thi/' + row._id)
     },
-    handleEditQuestion(row) {
-      this.$router.push('/quan-ly-toeic/cau-hoi/' + row._id)
+    handleEditQuestion(row, type) {
+      this.$router.push('/quan-ly-toeic/cau-hoi/' + row._id + '?type=' + type)
     },
     handleAdd() {
       this.$router.push('/quan-ly-toeic/de-thi/0')

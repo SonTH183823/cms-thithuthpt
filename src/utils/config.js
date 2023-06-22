@@ -295,39 +295,55 @@ const config = {
   subjectConfig: [
     {
       value: 1,
+      typeTag: 'success',
       label: 'Toán Học'
     },
     {
       value: 2,
+      typeTag: 'primary',
       label: 'Vật Lý'
     },
     {
       value: 3,
+      typeTag: 'warning',
       label: 'Hóa Học'
     },
     {
       value: 4,
+      typeTag: 'danger',
       label: 'Sinh Học'
     },
     {
       value: 5,
+      typeTag: 'info',
       label: 'Tiếng Anh'
     },
     {
       value: 6,
+      typeTag: 'success',
       label: 'Lịch Sử'
     },
     {
       value: 7,
+      typeTag: 'warning',
       label: 'Địa Lý'
     },
     {
       value: 8,
+      typeTag: 'danger',
       label: 'GDCD'
     },
+  ],
+  caeToeicConfig: [
     {
-      value: 9,
-      label: 'Toeic'
+      value: 1,
+      typeTag: 'warning',
+      label: 'Bộ đề'
+    },
+    {
+      value: 2,
+      typeTag: 'danger',
+      label: 'Đề rút gọn'
     },
   ],
   subToanList: [

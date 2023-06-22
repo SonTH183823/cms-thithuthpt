@@ -6,9 +6,11 @@
           <h3 style="font-weight: bold">Đề bài<span
             style="color: #f56c6c; font-weight: 400; font-size: 13px"
           > (require)</span></h3>
-          <div v-if="question.content" style="position: relative">
+          <el-input v-model="questionTmp.content" type="textarea" :min-rows="5" autosize/>
+          <h3 style="font-weight: bold">Mô tả: </h3>
+          <div v-if="questionTmp.description" style="position: relative">
             <img
-              :src="`${config.api.domainUpload}/${question.content}`"
+              :src="`${config.api.domainUpload}/${questionTmp.description}`"
               class="image-exam"
               alt=""
             >
@@ -22,15 +24,13 @@
             @click="addImg('content')"
           >
           <div class="el-row--flex">
-            <el-button type="text" @click="addImg('content')">Thêm ảnh đề thi</el-button>
+            <el-button type="text" @click="addImg('content')">Thêm ảnh mô tả</el-button>
           </div>
-          <h3 style="font-weight: bold">Mô tả: </h3>
-          <el-input v-model="question.description" type="textarea" :min-rows="2"/>
         </div>
       </el-col>
       <el-col :xl="12" :md="12">
         <h3 style="font-weight: bold">Đáp án:</h3>
-        <el-radio-group v-model="question.answer">
+        <el-radio-group v-model="questionTmp.answer">
           <el-radio :label="1">A</el-radio>
           <el-radio :label="2">B</el-radio>
           <el-radio :label="3">C</el-radio>
@@ -42,6 +42,7 @@
           v-model="category"
           style="display: flex; width: 100%"
           placeholder="Lựa chọn"
+          :disabled="question.subject === 9"
         >
           <el-option
             v-for="c in listCategory"
@@ -53,9 +54,9 @@
           </el-option>
         </el-select>
         <h3 style="font-weight: bold">Lời giải:</h3>
-        <div v-if="question.explanation" style="position: relative">
+        <div v-if="questionTmp.explanation" style="position: relative">
           <img
-            :src="`${config.api.domainUpload}/${question.explanation}`"
+            :src="`${config.api.domainUpload}/${questionTmp.explanation}`"
             class="image-exam"
             alt=""
           >
@@ -117,7 +118,7 @@
 
 <script>
 import config from "@/utils/config"
-import vueFilePond, { setOptions } from 'vue-filepond'
+import vueFilePond, {setOptions} from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -173,14 +174,15 @@ export default {
       imgFile: [],
       explanationFile: [],
       category: this.question.category,
+      questionTmp: this.question,
       server: {
-        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (this.typeImg === 'content') {
-              this.question.content = data.filename
+              this.questionTmp.description = data.filename
             } else {
-              this.question.explanation = data.filename
+              this.questionTmp.explanation = data.filename
             }
             this.dialogFormVisible = false
           } else {
@@ -194,8 +196,25 @@ export default {
     }
   },
   watch: {
-    'question.content': {
-      handler: function(val, oldVal) {
+    'questionTmp.content': {
+      handler: function (val, oldVal) {
+        if (val && val !== oldVal) {
+          this.question.content = this.questionTmp.content
+          this.handlePushQuestion()
+        }
+      },
+      immediate: false,
+      deep: true
+    },
+    'questionTmp.explanation': {
+      handler: function (val, oldVal) {
+        this.handlePushQuestion()
+      },
+      immediate: false,
+      deep: true
+    },
+    'questionTmp.answer': {
+      handler: function (val, oldVal) {
         if (val && val !== oldVal) {
           this.handlePushQuestion()
         }
@@ -203,53 +222,27 @@ export default {
       immediate: false,
       deep: true
     },
-    category: {
-      handler: function(val, oldVal) {
-        if (val && val !== oldVal) {
-          this.handlePushQuestion('category')
-        }
-      },
-      immediate: false,
-      deep: true
-    },
-    'question.explanation': {
-      handler: function(val, oldVal) {
-        if (val && val !== oldVal) {
-          this.handlePushQuestion()
-        }
-      },
-      immediate: false,
-      deep: true
-    },
-    'question.answer': {
-      handler: function(val, oldVal) {
-        if (val && val !== oldVal) {
-          this.handlePushQuestion()
-        }
-      },
-      immediate: false,
-      deep: true
-    },
-    'question.description': {
-      handler: function(val, oldVal) {
-        if (val !== oldVal) {
-          this.handlePushQuestion()
-        }
+    'questionTmp.description': {
+      handler: function (val, oldVal) {
+        this.handlePushQuestion()
       },
       immediate: false,
       deep: true
     }
   },
+  mounted() {
+    console.log(this.question)
+  },
   methods: {
     checkAddNewQuestion() {
-      return !(this.question?.content && this.question?.answer)
+      return !(this.questionTmp?.content && this.questionTmp?.answer)
     },
     onRemoveFile(type) {
       if (type === 'content') {
-        this.question.content = ''
+        this.questionTmp.description = ''
         this.imgFile = []
       } else {
-        this.question.exexplanation = ''
+        this.questionTmp.explanation = ''
         this.explanationFile = []
       }
     },
@@ -260,21 +253,13 @@ export default {
     handleAddImgCancel() {
       this.dialogFormVisible = false
     },
-    handlePushQuestion(type) {
-      const { content, description, explanation } = this.question
-      if (content && description && explanation && this.category) {
-        return
-      }
-      if (this.question.content && this.category) {
+    handlePushQuestion() {
+      if (this.questionTmp.content) {
         const questions = {
-          ...this.question,
+          ...this.questionTmp,
           category: this.category
         }
-        if (type === 'category') {
-          this.$emit('update-question', { question: questions, index: this.index, cateChange: true })
-        } else {
-          this.$emit('update-question', { question: questions, index: this.index, cateChange: false })
-        }
+        this.$emit('update-question', {question: questions, index: this.index, cateChange: false})
       }
     }
   }

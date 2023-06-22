@@ -105,9 +105,14 @@
               </el-select>
             </el-form-item>
             <div style="display: flex; justify-content: space-between">
+              <el-form-item label="Số câu hỏi" prop="numberQuestion">
+                <el-input-number v-model="formSubmit.numberQuestion" :min="1" :step="10" />
+              </el-form-item>
               <el-form-item label="Đánh giá" prop="rate">
                 <el-input-number v-model="formSubmit.rate" :step="0.1" :min="0"/>
               </el-form-item>
+            </div>
+            <div style="display: flex; justify-content: space-between">
               <el-form-item label="Lượt xem" prop="rate">
                 <el-input-number v-model="formSubmit.numberView" :min="0"/>
               </el-form-item>
@@ -242,6 +247,7 @@ export default {
         level: 1,
         outstanding: 0,
         rate: 5,
+        numberQuestion: 40,
         numberView: 12,
         numberTest: 2
       },
@@ -260,7 +266,8 @@ export default {
           validator: validateText
         }],
         thumbnail: [{required: true, trigger: 'blur', message: ' '}],
-        subject: [{required: true, trigger: 'blur', message: ' '}]
+        subject: [{required: true, trigger: 'blur', message: ' '}],
+        numberQuestion: [{required: true, trigger: 'blur', message: ' '}],
       },
       formType: '',
       ExamId: this.$route.params.id,
