@@ -38,6 +38,24 @@
               </div>
             </div>
           </el-form-item>
+          <el-form-item>
+            <div style="display: flex; flex-direction: row; align-items: center; margin-bottom: 20px">
+              <div style="font-weight: bold; margin-right: 5px">File listening audio:</div>
+              <a-upload
+                v-model="formSubmit.listeningFile"
+                :custom-request="handleUploadFile"
+                :before-upload="beforeUploadAudio"
+                :show-upload-list="false"
+              >
+                <a-button>
+                  <el-icon name="upload2" style="margin-right: 5px"/>
+                  Tải lên file audio
+                </a-button>
+              </a-upload>
+              <div v-if="audioErorr" style="color:red; margin-left: 20px">{{ audioErorr }}</div>
+              <div v-if="formSubmit.listeningFile" style="margin-left: 20px">{{ formSubmit.listeningFile }}</div>
+            </div>
+          </el-form-item>
           <el-col :xl="12" :md="12">
             <el-form-item label="Hình ảnh" prop="thumbnail">
               <div>
@@ -85,22 +103,6 @@
               </el-select>
             </el-form-item>
 
-            <!--            <el-form-item class="category-form" label="Độ khó" prop="level">-->
-            <!--              <el-select-->
-            <!--                v-model="formSubmit.level"-->
-            <!--                style="display: flex; width: 100%"-->
-            <!--                placeholder="Chọn độ khó..."-->
-            <!--              >-->
-            <!--                <el-option-->
-            <!--                  v-for="item in config.levelConfig"-->
-            <!--                  :key="item.value"-->
-            <!--                  :label="item.label"-->
-            <!--                  :value="item.value"-->
-            <!--                >-->
-            <!--                  {{ item.label }}-->
-            <!--                </el-option>-->
-            <!--              </el-select>-->
-            <!--            </el-form-item>-->
             <div style="display: flex; justify-content: space-between">
               <el-form-item label="Thời gian làm bài (phút)" prop="time">
                 <el-input-number v-model="formSubmit.time" :min="0" :step="30"/>
@@ -125,6 +127,8 @@
                 <el-input-number v-model="formSubmit.numberTest" :min="0"/>
               </el-form-item>
             </div>
+
+
           </el-col>
         </el-form>
       </el-row>
@@ -168,6 +172,7 @@ import FilePondPluginImagePreview from 'filepond-plugin-image-preview'
 import FilePondPluginImageTransform from 'filepond-plugin-image-transform'
 import FilePondPluginImageResize from 'filepond-plugin-image-resize'
 import UploadAPI from "@/api/uploadApi"
+import request from "@/utils/request";
 
 const FilePond = vueFilePond(
   FilePondPluginFileValidateType,
@@ -239,6 +244,7 @@ export default {
         cateToeic: 1,
         numberListening: 100,
         numberReading: 100,
+        listeningFile: ''
       },
       listTypeQuestion: [],
       formRules: {
@@ -262,6 +268,8 @@ export default {
       formType: '',
       ExamId: this.$route.params.id,
       loading: true,
+      audioErorr: '',
+      loadingUploadAudio: false
     }
   },
   watch: {
@@ -273,7 +281,7 @@ export default {
         }
       },
       immediate: true,
-      deep: true
+      deep: true,
     },
   },
 
@@ -288,6 +296,25 @@ export default {
     this.loading = false
   },
   methods: {
+    beforeUploadAudio(file) {
+      const isAudio = file.type === 'audio/mpeg'
+      this.audioErorr = ''
+      if (!isAudio) {
+        this.audioErorr = `${file.name} không phải mp3 file!`
+      } else {
+        this.audioErorr = ''
+      }
+    },
+    async handleUploadFile(res) {
+      this.formSubmit.listeningFile = ''
+      this.loadingUploadAudio = true
+      if (!this.audioErorr) {
+        const data = await UploadAPI.uploadFile(res.file)
+        this.formSubmit.listeningFile = data.filename
+      }
+      this.loadingUploadAudio = false
+      return Promise.resolve()
+    },
     async loadFormEdit() {
       try {
         this.loading = true
