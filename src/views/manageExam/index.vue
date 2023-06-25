@@ -51,11 +51,7 @@
             />
           </template>
           <el-table-column label="Thời gian làm bài (phút)" prop="time" align="center" min-width="80"></el-table-column>
-          <el-table-column label="Số câu hỏi" prop="createdBy" align="center" min-width="50">
-            <template slot-scope="scope">
-              <div>{{ scope.row.questionIds.length}}</div>
-            </template>
-          </el-table-column>
+          <el-table-column label="Số câu hỏi" prop="numberQuestion" align="center" min-width="50"></el-table-column>
           <el-table-column label="Người tạo" prop="createdBy" align="center" min-width="60"></el-table-column>
           <template v-for="column in columnsMap1">
             <search-column
