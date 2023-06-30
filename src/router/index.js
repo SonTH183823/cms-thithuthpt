@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
-import LayoutChild from '@/layout/layout-child'
 import config from "@/utils/config"
 
 Vue.use(Router)
@@ -200,14 +199,14 @@ const baseRouter = [
       meta: {title: 'Quản lý đánh giá', icon: 'star'},
     }]
   },
-  {
-    path: '/gioi-thieu', component: Layout, children: [{
-      path: 'danh-sach',
-      name: 'Quản lý giới thiệu',
-      component: () => import('@/views/manageIntro/index'),
-      meta: {title: 'Quản lý giới thiệu', icon: 'lead_buy', authorize: [config.roleConfig.INTRODUCTION]},
-    }]
-  },
+  // {
+  //   path: '/gioi-thieu', component: Layout, children: [{
+  //     path: 'danh-sach',
+  //     name: 'Quản lý giới thiệu',
+  //     component: () => import('@/views/manageIntro/index'),
+  //     meta: {title: 'Quản lý giới thiệu', icon: 'lead_buy', authorize: [config.roleConfig.INTRODUCTION]},
+  //   }]
+  // },
   {
     path: '/', component: Layout, children: [{
       path: '/nguoi-dung',

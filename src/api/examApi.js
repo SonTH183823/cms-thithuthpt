@@ -22,6 +22,12 @@ const ExamAPI = {
       method: 'get'
     })
   },
+  getExamQuestionById(id) {
+    return request({
+      url: `${config.api.exam}/question/${id}`,
+      method: 'get'
+    })
+  },
   getExamHasQuestionById(id) {
     return request({
       url: `${config.api.toeic}/question/${id}`,

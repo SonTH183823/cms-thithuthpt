@@ -120,24 +120,6 @@
                 <el-input-number v-model="formSubmit.numberTest" :min="0"/>
               </el-form-item>
             </div>
-<!--            <el-form-item label="Phân phối đề thi">-->
-<!--              <div style="display: flex; justify-content: space-between; padding-left: 30px; font-weight: bold">-->
-<!--                <span>STT</span>-->
-<!--                <span>Dạng câu hỏi</span>-->
-<!--                <span>Số câu hỏi</span>-->
-<!--              </div>-->
-<!--              <div v-for="(item,index) in listTypeQuestion" style="padding-left: 40px; padding-right: 30px">-->
-<!--                <div :key="index" style="display: flex; justify-content: space-between">-->
-<!--                  <span>{{ index + 1 }}</span>-->
-<!--                  <span>{{ item.label }}</span>-->
-<!--                  <span>{{ item.value }}</span>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div v-if="listTypeQuestion.length === 0"-->
-<!--                   style="align-items: center; width: 100%; display: flex; justify-content: center"-->
-<!--              >Không có dữ liệu-->
-<!--              </div>-->
-<!--            </el-form-item>-->
           </el-col>
         </el-form>
       </el-row>

@@ -149,7 +149,7 @@ export default {
     FilePond
   },
   props: {
-    question: {
+    questionPush: {
       type: Object,
       required: true,
       default() {
@@ -171,8 +171,9 @@ export default {
       dialogFormVisible: false,
       innerVisible: false,
       imgFile: [],
+      question: this.questionPush,
       explanationFile: [],
-      category: this.question.category,
+      category: this.questionPush.category,
       server: {
         process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
@@ -239,6 +240,9 @@ export default {
       immediate: false,
       deep: true
     }
+  },
+  mounted() {
+    console.log(this.question)
   },
   methods: {
     checkAddNewQuestion() {

@@ -15,6 +15,14 @@
             </el-button>
           </div>
         </el-col>
+        <div style="color:#f56c6c;">
+          <!--            <el-button type="warning" @click="handleCancel"> Upload thư mục câu hỏi</el-button>-->
+          <!--            <upload-folder @loading-upload="Uploading" @update-images="updateImage"/>-->
+          Lưu ý: Cần phải nhập đủ {{ numberQuestion }} câu hỏi
+        </div>
+        <div>
+          Số câu hỏi hiện tại là {{ listQuestion.length }}
+        </div>
       </el-row>
       <el-row>
         <div style="flex-direction: row; font-weight: bold">
@@ -50,8 +58,11 @@
             <template slot="title">
               <div style="font-weight: bold; font-size: 18px">Câu {{ idx + 1 }}</div>
             </template>
-            <QuestionItem :question="item" :index="idx" :list-category="listPartSubject"
-                          @update-question="handleUpdateQuestion"
+            <QuestionItem
+              :question-push="item"
+              :index="idx"
+              :list-category="listPartSubject"
+              @update-question="handleUpdateQuestion"
             />
             <div style="display: flex; flex-direction: row; margin-left: 10px; justify-content: center">
               <el-button
@@ -103,9 +114,9 @@
 
 <script>
 import config from "@/utils/config"
-import { validText } from "@/utils/validate"
+import {validText} from "@/utils/validate"
 import ExamAPI from "@/api/examApi"
-import vueFilePond, { setOptions } from 'vue-filepond'
+import vueFilePond, {setOptions} from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -154,7 +165,7 @@ export default {
       myFiles: [],
       activeNames: [],
       server: {
-        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -200,8 +211,8 @@ export default {
           message: 'Vui lòng nhập mô tả bài viết',
           validator: validateText
         }],
-        thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],
-        subject: [{ required: true, trigger: 'blur', message: ' ' }]
+        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
+        subject: [{required: true, trigger: 'blur', message: ' '}]
       },
       formType: '',
       ExamId: this.$route.params.id,
@@ -216,26 +227,26 @@ export default {
     this.loadingNews = true
     if (this.ExamId !== '0') {
       this.formType = 'edit'
-      this.addEmptyQuestion()
       await this.loadFormEdit()
       await this.partSubject()
+      this.addEmptyQuestion()
     } else {
       this.formType = 'create'
     }
     this.loadingNews = false
   },
   methods: {
-    Uploading({ loading }) {
+    Uploading({loading}) {
       this.loadingNews = loading
     },
-    updateImage({ data }) {
+    updateImage({data}) {
       this.listQuestion = []
       for (const item of data) {
         this.listQuestion.push({
           content: item,
           answer: 1,
           subject: this.formSubmit.subject,
-          category: this.listPartSubject[0]._id,
+          category: this.listPartSubject.length ? this.listPartSubject[0]?._id : '',
           explanation: '',
           description: ''
         })
@@ -243,18 +254,24 @@ export default {
       }
     },
     addEmptyQuestion() {
-      this.listQuestion.push({
-        content: '',
-        answer: 1,
-        subject: this.formSubmit.subject,
-        category: '',
-        explanation: '',
-        description: ''
-      })
-      this.activeNames.push(this.activeNames.length.toString())
+      if (this.listQuestion.length === 0) {
+        this.listQuestion.push({
+          content: '',
+          answer: 1,
+          subject: this.formSubmit.subject,
+          category: '',
+          explanation: '',
+          description: ''
+        })
+        this.activeNames.push(this.activeNames.length.toString())
+      } else {
+        for (const index of this.listQuestion) {
+          this.activeNames.push(this.activeNames.length.toString())
+        }
+      }
     },
     async partSubject() {
-      const { data } = await PartSubjectAPI.get({ subject: this.formSubmit.subject })
+      const {data} = await PartSubjectAPI.get({subject: this.formSubmit.subject})
       this.listPartSubject = [...data]
       for (const i of data) {
         this.listTypeQuestion.push({
@@ -267,12 +284,10 @@ export default {
     async loadFormEdit() {
       try {
         this.loadingNews = true
-        const data = await ExamAPI.getById(this.ExamId)
-        this.formSubmit = {
-          ...data,
-        }
+        const data = await ExamAPI.getExamQuestionById(this.ExamId)
+        this.formSubmit = {...data}
         this.numberQuestion = data.numberQuestion
-        // this.listQuestion = data.questionIds
+        this.listQuestion = data.questionIds
         this.loadingNews = false
       } catch (err) {
         console.log(err)
@@ -291,7 +306,7 @@ export default {
       this.formSubmit.thumbnail = undefined
       this.myFiles = []
     },
-    handleUpdateQuestion({ question, index, cateChange }) {
+    handleUpdateQuestion({question, index, cateChange}) {
       this.listQuestion[index] = {
         ...this.listQuestion[index],
         ...question
@@ -306,24 +321,26 @@ export default {
       }
     },
     async handleSend() {
-      const dataSubmit = {
-        ...this.formSubmit,
-        listQuestion: this.listQuestion,
-        listTypeQuestion: this.listTypeQuestion
-      }
-      try {
-        this.loadingNews = true
-        if (this.formType === 'create') {
-          await ExamAPI.create(dataSubmit)
-        } else {
-          await ExamAPI.updateQuestion(dataSubmit, this.ExamId)
+      if (this.listQuestion.length === this.numberQuestion) {
+        const dataSubmit = {
+          ...this.formSubmit,
+          listQuestion: this.listQuestion,
+          listTypeQuestion: this.listTypeQuestion
         }
-        this.formSubmit = {}
-        this.loadingNews = false
-      } catch (err) {
-        this.loadingNews = false
+        try {
+          this.loadingNews = true
+          if (this.formType === 'create') {
+            await ExamAPI.create(dataSubmit)
+          } else {
+            await ExamAPI.updateQuestion(dataSubmit, this.ExamId)
+          }
+          this.formSubmit = {}
+          this.loadingNews = false
+        } catch (err) {
+          this.loadingNews = false
+        }
+        this.$router.push('/quan-ly-de-thi/danh-sach')
       }
-      this.$router.push('/quan-ly-de-thi/danh-sach')
     },
     handleCancel() {
       this.$router.push('/quan-ly-de-thi/danh-sach')
