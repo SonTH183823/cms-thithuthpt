@@ -283,6 +283,7 @@ export default {
       this.myFiles = []
     },
     handleUpdateQuestion({question, index}) {
+      console.log(question)
       this.listQuestion[index] = {
         ...this.listQuestion[index],
         ...question

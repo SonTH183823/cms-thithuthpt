@@ -127,8 +127,6 @@
                 <el-input-number v-model="formSubmit.numberTest" :min="0"/>
               </el-form-item>
             </div>
-
-
           </el-col>
         </el-form>
       </el-row>

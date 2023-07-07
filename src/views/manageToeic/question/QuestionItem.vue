@@ -7,52 +7,57 @@
             style="color: #f56c6c; font-weight: 400; font-size: 13px"
           > (require)</span></h3>
           <el-input v-model="questionTmp.content" type="textarea" :min-rows="5" autosize/>
-          <h3 style="font-weight: bold">Mô tả: </h3>
-          <div v-if="questionTmp.description" style="position: relative">
-            <img
-              :src="`${config.api.domainUpload}/${questionTmp.description}`"
-              class="image-exam"
-              alt=""
-            >
-            <span class="icon-remove-img" @click="onRemoveFile('content')"><el-icon name="error"/></span>
-          </div>
-          <img
-            v-else
-            alt=""
-            src="../../../assets/images/image_placeholder.png"
-            style="width: 70%; height: 250px"
-            @click="addImg('content')"
+          <h3 style="font-weight: bold">Chuyên đề <span style="color: #f56c6c; font-weight: 400; font-size: 13px">(require)</span>
+          </h3>
+          <el-select
+            v-model="category"
+            style="display: flex; width: 100%"
+            placeholder="Lựa chọn"
+            :disabled="question.subject === 9"
           >
-          <div class="el-row--flex">
-            <el-button type="text" @click="addImg('content')">Thêm ảnh mô tả</el-button>
+            <el-option
+              v-for="c in listCategory"
+              :key="c._id"
+              :label="c.name"
+              :value="c._id"
+            >
+              {{ c.name }}
+            </el-option>
+          </el-select>
+          <h3 style="font-weight: bold">Câu hỏi:</h3>
+          <div v-for="item in [0,1,2,3]">
+            <span>Câu hỏi {{ item + 1 }}:</span>
+            <el-input v-model="questionTmp.questions[item]" type="textarea" :min-rows="5" autosize/>
           </div>
+          <h3 style="font-weight: bold">Đáp án:</h3>
+          <el-radio-group v-model="questionTmp.answer">
+            <el-radio :label="1">A</el-radio>
+            <el-radio :label="2">B</el-radio>
+            <el-radio :label="3">C</el-radio>
+            <el-radio :label="4">D</el-radio>
+          </el-radio-group>
         </div>
       </el-col>
       <el-col :xl="12" :md="12">
-        <h3 style="font-weight: bold">Đáp án:</h3>
-        <el-radio-group v-model="questionTmp.answer">
-          <el-radio :label="1">A</el-radio>
-          <el-radio :label="2">B</el-radio>
-          <el-radio :label="3">C</el-radio>
-          <el-radio :label="4">D</el-radio>
-        </el-radio-group>
-        <h3 style="font-weight: bold">Chuyên đề <span style="color: #f56c6c; font-weight: 400; font-size: 13px">(require)</span>
-        </h3>
-        <el-select
-          v-model="category"
-          style="display: flex; width: 100%"
-          placeholder="Lựa chọn"
-          :disabled="question.subject === 9"
-        >
-          <el-option
-            v-for="c in listCategory"
-            :key="c._id"
-            :label="c.name"
-            :value="c._id"
+        <h3 style="font-weight: bold">Mô tả: </h3>
+        <div v-if="questionTmp.description" style="position: relative">
+          <img
+            :src="`${config.api.domainUpload}/${questionTmp.description}`"
+            class="image-exam"
+            alt=""
           >
-            {{ c.name }}
-          </el-option>
-        </el-select>
+          <span class="icon-remove-img" @click="onRemoveFile('content')"><el-icon name="error"/></span>
+        </div>
+        <img
+          v-else
+          alt=""
+          src="../../../assets/images/image_placeholder.png"
+          style="width: 70%; height: 250px"
+          @click="addImg('content')"
+        >
+        <div class="el-row--flex">
+          <el-button type="text" @click="addImg('content')">Thêm ảnh mô tả</el-button>
+        </div>
         <h3 style="font-weight: bold">Lời giải:</h3>
         <div v-if="questionTmp.explanation" style="position: relative">
           <img
@@ -228,14 +233,27 @@ export default {
       },
       immediate: false,
       deep: true
+    },
+    'questionTmp.questions': {
+      handler: function (val) {
+        if (this.checkArrQuestion(val)) {
+          this.handlePushQuestion()
+        }
+      },
+      immediate: false,
+      deep: true
     }
-  },
-  mounted() {
-    console.log(this.question)
   },
   methods: {
     checkAddNewQuestion() {
       return !(this.questionTmp?.content && this.questionTmp?.answer)
+    },
+    checkArrQuestion(val) {
+      if (val.length !== 4) return false
+      for (const e of val) {
+        if (e === '') return false
+      }
+      return true
     },
     onRemoveFile(type) {
       if (type === 'content') {
