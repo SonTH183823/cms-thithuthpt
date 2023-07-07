@@ -225,6 +225,7 @@ export default {
           answer: 1,
           subject: this.formSubmit.subject,
           category: this.idPartSubject,
+          questions: ['', '', '', ''],
           explanation: '',
           description: ''
         })
@@ -236,6 +237,7 @@ export default {
         this.listQuestion.push({
           content: '',
           answer: 1,
+          questions: ['', '', '', ''],
           subject: this.formSubmit.subject,
           category: this.idPartSubject,
           explanation: '',
@@ -283,7 +285,6 @@ export default {
       this.myFiles = []
     },
     handleUpdateQuestion({question, index}) {
-      console.log(question)
       this.listQuestion[index] = {
         ...this.listQuestion[index],
         ...question
@@ -331,7 +332,8 @@ export default {
         subject: this.formSubmit.subject,
         category: this.idPartSubject,
         explanation: '',
-        description: ''
+        description: '',
+        questions: ['', '', '', ''],
       })
       this.activeNames.push(this.activeNames.length.toString())
     },
