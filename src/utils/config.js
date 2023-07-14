@@ -1,23 +1,5 @@
-const domainAuth = process.env['VUE_APP_AUTH_API'] || 'http://127.0.0.1:8003' + '/cms'
 const domain = process.env['VUE_APP_DOMAIN_API'] || 'http://127.0.0.1:8003' + '/cms'
 const domainUpload = process.env['VUE_APP_UPLOAD_API'] || 'http://127.0.0.1:8003' + '/uploads'
-const domainPartner = process.env['VUE_APP_PARTNER_API'] || 'http://192.168.11.42:8009'
-const domainPopupForums = process.env['VUE_APP_PARTNER_API'] || 'http://192.168.11.42:8061'
-const domainUploadFile = process.env['VUE_APP_UPLOAD_FILE_API'] || 'https://files-cdn.carpla.dev/dev-carpla-tc'
-const domainDecorate = process.env['VUE_APP_DECORATE_API'] || 'http://192.168.11.42:8009'
-const domainCustomer = process.env['VUE_APP_CUSTOMER_API'] || 'http://192.168.11.42:8003'
-const domainNews = process.env['VUE_APP_NEWS_API'] || 'http://192.168.11.42:8006'
-const domainTypeCar = process.env['VUE_APP_TYPE_CAR_API'] || 'http://192.168.11.42:8023'
-const domainSeo = process.env['VUE_APP_SEO_API'] || 'http://192.168.11.42:8013'
-const domainCar = process.env['VUE_APP_CAR'] || 'http://192.168.11.42:8027'
-const userTransaction = process.env['VUE_APP_USER_TRANSACTION'] || 'http://192.168.11.42:8028'
-const domainFaq = process.env['VUE_APP_FAQ'] || 'http://192.168.11.42:8029'
-const domainMinIO = process.env['VUE_APP_MINIO'] || 'http://192.168.11.42:8050'
-const domainRecruitment = process.env['VUE_APP_RECRUITMENT'] || 'http://192.168.11.42:8032'
-const domainPointCar = process.env['VUE_APP_POINT_CAR'] || 'http://192.168.11.42:8014'
-const domainSalePolicy = process.env['VUE_APP_SALE_POLICY'] || 'http://192.168.11.42:8033'
-const domainNotification = process.env['VUE_APP_NOTIFICATION'] || 'http://192.168.11.42:8017'
-const domainPopupVETC = process.env['VUE_APP_POPUP_VETC'] || 'http://192.168.11.42:8060'
 
 const config = {
   blobNamePreview: "temp-preview0x273asfds13FDAFASFASdxx31912",
@@ -33,35 +15,12 @@ const config = {
     toeic: `${domain}/examToeic`,
     question: `${domain}/question`,
     subject: `${domain}/partSubject`,
-    domainSalePolicy,
-    domainPointCar,
-    domainCar,
-    domainFaq,
-    domainUploadFile,
-    domainStatistic: domainPartner,
-    domainUser: domainCustomer,
-    userTransaction,
-    domainRecruitment,
-    popupVETC: `${domainPopupVETC}/campaign`,
-    popupVETCUpload: `${domainPopupVETC}`,
-    popup: `${domainPartner}/popup`,
-    popupForums: `${domainPopupForums}/popups`,
-    notification: `${domainNotification}/notification`,
-    notificationTemplate: `${domainNotification}/notificationTemplate`,
-    minio: `${domainMinIO}/presignedUrl`,
-    auth: `${domainAuth}/userCMS`,
+    minio: `${domain}/presignedUrl`,
+    auth: `${domain}/userCMS`,
     upload: `${domain}/upload`,
     uploadMultiple: `${domain}/uploadMany`,
-    user: `${domainAuth}/userCMS`,
-    domainNews,
-    news: `${domainAuth}/news`,
-    partner: `${domainPartner}/partner`,
-    menu: `${domainDecorate}/menu`,
-    customer: `${domainCustomer}/cms/user`,
-    banner: `${domainDecorate}/banner`,
-    seo: `${domainSeo}/seo`,
-    typeCar: `${domainTypeCar}/typeCar`,
-    car: `${domainCar}/car`
+    user: `${domain}/userCMS`,
+    news: `${domain}/news`,
   },
   httpCode: {
     SUCCESS: 200,
@@ -72,9 +31,6 @@ const config = {
     FORBIDDEN: 403,
     UNAUTHORIZED: 401,
     ADMIN_REQUIRE: 406
-  },
-  eventName: {
-    UPDATE_KANBAN_BOARD: 'updateKanbanBoard'
   },
   fileType: {
     1: 'excel',
