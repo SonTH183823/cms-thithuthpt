@@ -9,3 +9,7 @@ ENV VUE_APP_UPLOAD_API=https://api.thithuthpt.click/server/uploads
 EXPOSE 3000
 RUN yarn build:prod
 
+FROM nginx as production-stage
+RUN mkdir /app
+COPY --from=build-stage /app/dist /app
+COPY nginx.conf /etc/nginx/nginx.conf
