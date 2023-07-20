@@ -14,5 +14,5 @@ debug.log
 *.ntvs*
 *.njsproj
 *.sln
-.env.dev
+.env
 .env.development
