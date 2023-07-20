@@ -1,19 +1,11 @@
-FROM node:16-alpine as builder
+
+FROM node:16-alpine as build-stage
 WORKDIR /app
-COPY package.json yarn.lock ./
+COPY package*.json ./
 RUN yarn
-
-ENV VUE_APP_DOMAIN_API="https://api.thithuthpt.click/server/cms"
-ENV VUE_APP_UPLOAD_API="https://api.thithuthpt.click/server/uploads"
-
-FROM node:16-alpine
-WORKDIR /app
-ADD . ./
-COPY --from=builder ./app/node_modules ./node_modules/
-COPY --from=builder /app/package.json ./package.json
-
-
+COPY . .
+ENV VUE_APP_DOMAIN_API=https://api.thithuthpt.click/server/cms
+ENV VUE_APP_UPLOAD_API=https://api.thithuthpt.click/server/uploads
 EXPOSE 3000
 RUN yarn build:prod
-CMD ["yarn", "start"]
 

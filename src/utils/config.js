@@ -1,5 +1,5 @@
 const domain = process.env['VUE_APP_DOMAIN_API'] || 'https://api.thithuthpt.click/server/cms'
-const domainUpload = process.env['VUE_APP_UPLOAD_API'] || 'https://api.thithuthpt.click/server/uploads'
+const domainUpload = process.env['VUE_APP_UPLOAD_API'] || 'https://api.thithuthpt.click/server/cms/uploads'
 
 const config = {
   blobNamePreview: "temp-preview0x273asfds13FDAFASFASdxx31912",
