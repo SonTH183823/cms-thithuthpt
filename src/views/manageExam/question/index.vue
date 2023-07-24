@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-loading="loadingNews" class="news-form-container">
+    <div v-loading="loadingNews" class="news-form-container" :key="`keyquestion-`+key">
       <el-row><h2 style="font-weight: bold">Biên tập câu hỏi đề thi "{{ formSubmit.title }}"</h2></el-row>
       <el-row style="margin-top: 12px;margin-bottom: 20px">
         <el-col style="display: flex; justify-content: space-between; margin-right: 10px">
@@ -53,6 +53,27 @@
         >Không có dữ liệu
         </div>
         <h2 style="font-weight: bold; margin-top: 20px">Danh sách câu hỏi</h2>
+        <div v-if="listQuestion.length === 0"
+             style="align-items: center; width: 100%; display: flex; justify-content: center"
+        >
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            @click="handleAddQuestion(0)"
+          >Thêm câu hỏi
+          </el-button>
+        </div>
+        <div v-if="listQuestion.length > 0"
+             style="align-items: flex-end; width: 100%; display: flex; justify-content: end; margin-bottom: 10px"
+        >
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            @click="deleteAllQues"
+          >Xóa tất cả câu hỏi
+          </el-button>
+        </div>
         <el-collapse v-for="(item, idx) in listQuestion" v-model="activeNames">
           <el-collapse-item :name="idx.toString()">
             <template slot="title">
@@ -74,7 +95,6 @@
               >Thêm câu hỏi
               </el-button>
               <el-button
-                v-if="checkShowBtnDel()"
                 type="danger"
                 icon="el-icon-delete"
                 @click="handleDelQuestion(idx)"
@@ -114,9 +134,9 @@
 
 <script>
 import config from "@/utils/config"
-import {validText} from "@/utils/validate"
+import { validText } from "@/utils/validate"
 import ExamAPI from "@/api/examApi"
-import vueFilePond, {setOptions} from 'vue-filepond'
+import vueFilePond, { setOptions } from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -164,8 +184,9 @@ export default {
     return {
       myFiles: [],
       activeNames: [],
+      key: 0,
       server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -211,8 +232,8 @@ export default {
           message: 'Vui lòng nhập mô tả bài viết',
           validator: validateText
         }],
-        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
-        subject: [{required: true, trigger: 'blur', message: ' '}]
+        thumbnail: [{ required: true, trigger: 'blur', message: ' ' }],
+        subject: [{ required: true, trigger: 'blur', message: ' ' }]
       },
       formType: '',
       ExamId: this.$route.params.id,
@@ -236,10 +257,10 @@ export default {
     this.loadingNews = false
   },
   methods: {
-    Uploading({loading}) {
+    Uploading({ loading }) {
       this.loadingNews = loading
     },
-    updateImage({data}) {
+    updateImage({ data }) {
       this.listQuestion = []
       for (const item of data) {
         this.listQuestion.push({
@@ -271,7 +292,7 @@ export default {
       }
     },
     async partSubject() {
-      const {data} = await PartSubjectAPI.get({subject: this.formSubmit.subject})
+      const { data } = await PartSubjectAPI.get({ subject: this.formSubmit.subject })
       this.listPartSubject = [...data]
       for (const i of data) {
         this.listTypeQuestion.push({
@@ -285,7 +306,7 @@ export default {
       try {
         this.loadingNews = true
         const data = await ExamAPI.getExamQuestionById(this.ExamId)
-        this.formSubmit = {...data}
+        this.formSubmit = { ...data }
         this.numberQuestion = data.numberQuestion
         this.listQuestion = data.questionIds
         this.loadingNews = false
@@ -306,7 +327,7 @@ export default {
       this.formSubmit.thumbnail = undefined
       this.myFiles = []
     },
-    handleUpdateQuestion({question, index, cateChange}) {
+    handleUpdateQuestion({ question, index, cateChange }) {
       this.listQuestion[index] = {
         ...this.listQuestion[index],
         ...question
@@ -365,11 +386,14 @@ export default {
       })
       this.activeNames.push(this.activeNames.length.toString())
     },
-    checkShowBtnDel() {
-      return this.listQuestion.length !== 1
+    deleteAllQues() {
+      this.listQuestion = []
     },
     handleDelQuestion(index) {
+      console.log(index, this.listQuestion)
       this.listQuestion.splice(index, 1)
+      console.log(index, this.listQuestion)
+      this.key++
     }
   }
 }
