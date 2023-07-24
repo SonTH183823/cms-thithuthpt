@@ -56,8 +56,6 @@
                 <div v-if="!formSubmit.thumbnail" class="el-row--flex">
                   <el-button type="text" @click="addImg()">Thêm ảnh cover</el-button>
                 </div>
-                <div v-if="!hasImg && !formSubmit.thumbnail" style="color:#f56c6c; font-size: 12px">Vui lòng chọn ảnh!
-                </div>
               </div>
             </el-form-item>
             <el-form-item label="Tiêu đề" prop="title">
@@ -247,7 +245,6 @@ export default {
           message: 'Vui lòng nhập nội dung bài viết',
           validator: validateText
         }],
-        thumbnail: [{required: true, trigger: 'blur', message: ' '}],
         subject: [{required: true, trigger: 'blur', message: ' '}],
         numberQuestion: [{required: true, trigger: 'blur', message: ' '}],
       },
@@ -305,7 +302,7 @@ export default {
       this.dialogVisibleAddImg = false
     },
     onRemoveFile() {
-      this.formSubmit.thumbnail = undefined
+      this.formSubmit.thumbnail = ''
       this.myFiles = []
     },
     async handleSend() {
@@ -313,12 +310,7 @@ export default {
         ...this.formSubmit,
       }
       await this.$refs.formSubmit.validate(async valid => {
-        if (!this.formSubmit.thumbnail) {
-          this.hasImg = false
-          valid = false
-        } else {
-          this.hasImg = true
-        }
+
         if (valid) {
           try {
             this.loading = true

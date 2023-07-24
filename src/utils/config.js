@@ -1,5 +1,5 @@
-const domain = process.env['VUE_APP_DOMAIN_API'] || 'http://127.0.0.1/cms'
-const domainUpload = process.env['VUE_APP_UPLOAD_API'] || 'http://127.0.0.1/uploads'
+const domain = process.env['VUE_APP_DOMAIN_API'] || 'http://127.0.0.1:8003/cms'
+const domainUpload = process.env['VUE_APP_UPLOAD_API'] || 'http://127.0.0.1:8003/uploads'
 
 const config = {
   blobNamePreview: "temp-preview0x273asfds13FDAFASFASdxx31912",

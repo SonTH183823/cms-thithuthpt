@@ -6,7 +6,6 @@
 
 <script>
 import 'froala-editor/js/languages/vi.js'
-import MinIOAPI from "@/api/minioApi"
 import config from "@/utils/config"
 import UploadAPI from "@/api/uploadApi"
 
