@@ -104,20 +104,38 @@
             </el-form-item>
             <div style="display: flex; justify-content: space-between">
               <el-form-item label="Số câu hỏi" prop="numberQuestion">
-                <el-input-number v-model="formSubmit.numberQuestion" :min="1" :step="10" />
+                <el-input-number v-model="formSubmit.numberQuestion" :min="1" :step="10"/>
               </el-form-item>
               <el-form-item label="Đánh giá" prop="rate">
                 <el-input-number v-model="formSubmit.rate" :step="0.1" :min="0"/>
               </el-form-item>
             </div>
-            <div style="display: flex; justify-content: space-between">
-              <el-form-item label="Lượt xem" prop="rate">
-                <el-input-number v-model="formSubmit.numberView" :min="0"/>
-              </el-form-item>
-              <el-form-item label="Lượt thi" prop="rate">
-                <el-input-number v-model="formSubmit.numberTest" :min="0"/>
-              </el-form-item>
-            </div>
+            <el-form-item>
+              <div style="font-weight: bold; margin-right: 5px">File đề thi:</div>
+              <div style="display: flex; flex-direction: row; align-items: start; margin-bottom: 20px">
+                <a-upload
+                  v-model="formSubmit.link"
+                  :custom-request="handleUploadFile"
+                  :before-upload="beforeUploadAudio"
+                  :show-upload-list="false"
+                >
+                  <a-button>
+                    <el-icon name="upload2" style="margin-right: 5px"/>
+                    Tải lên file audio
+                  </a-button>
+                </a-upload>
+                <div v-if="audioErorr" style="color:red; margin-left: 20px">{{ audioErorr }}</div>
+                <div v-if="formSubmit.link" style="margin-left: 20px">{{ formSubmit.link }}</div>
+              </div>
+            </el-form-item>
+            <!--            <div style="display: flex; justify-content: space-between">-->
+            <!--              <el-form-item label="Lượt xem" prop="rate">-->
+            <!--                <el-input-number v-model="formSubmit.numberView" :min="0"/>-->
+            <!--              </el-form-item>-->
+            <!--              <el-form-item label="Lượt thi" prop="rate">-->
+            <!--                <el-input-number v-model="formSubmit.numberTest" :min="0"/>-->
+            <!--              </el-form-item>-->
+            <!--            </div>-->
           </el-col>
         </el-form>
       </el-row>
@@ -151,9 +169,9 @@
 
 <script>
 import config from "@/utils/config"
-import {validText} from "@/utils/validate"
+import { validText } from "@/utils/validate"
 import ExamAPI from "@/api/examApi"
-import vueFilePond, {setOptions} from 'vue-filepond'
+import vueFilePond, { setOptions } from 'vue-filepond'
 import 'filepond/dist/filepond.css'
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css'
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
@@ -200,7 +218,7 @@ export default {
       dialogVisible: false,
       activeNames: [],
       server: {
-        process: async (fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
+        process: async(fieldName, file, metadata, load, error, progress, abort, transfer, options) => {
           if (!file.name.includes(config.blobNamePreview)) {
             const data = await UploadAPI.uploadFile(file)
             if (!this.editorFocus) {
@@ -228,9 +246,11 @@ export default {
         outstanding: 0,
         rate: 5,
         numberQuestion: 40,
-        numberView: 12,
-        numberTest: 2
+        numberView: 0,
+        numberTest: 0
       },
+      audioErorr: '',
+      loadingUploadAudio: false,
       listTypeQuestion: [],
       formRules: {
         title: [{
@@ -245,8 +265,8 @@ export default {
           message: 'Vui lòng nhập nội dung bài viết',
           validator: validateText
         }],
-        subject: [{required: true, trigger: 'blur', message: ' '}],
-        numberQuestion: [{required: true, trigger: 'blur', message: ' '}],
+        subject: [{ required: true, trigger: 'blur', message: ' ' }],
+        numberQuestion: [{ required: true, trigger: 'blur', message: ' ' }],
       },
       formType: '',
       ExamId: this.$route.params.id,
@@ -255,7 +275,7 @@ export default {
   },
   watch: {
     'formSubmit.subject': {
-      handler: function (val) {
+      handler: function(val) {
         this.listTypeQuestion = []
         if (val === 1) {
           for (const item of config.subToanList) {
@@ -286,7 +306,7 @@ export default {
       try {
         this.loading = true
         const data = await ExamAPI.getById(this.ExamId)
-        this.formSubmit = {...data}
+        this.formSubmit = { ...data }
         this.loading = false
       } catch (err) {
         console.log(err)
@@ -339,7 +359,26 @@ export default {
     },
     checkAddNewQuestion() {
 
-    }
+    },
+    beforeUploadAudio(file) {
+      const isAudio = file.type === 'application/pdf'
+      this.audioErorr = ''
+      if (!isAudio) {
+        this.audioErorr = `${file.name} không phải pdf file!`
+      } else {
+        this.audioErorr = ''
+      }
+    },
+    async handleUploadFile(res) {
+      this.formSubmit.link = ''
+      this.loadingUploadAudio = true
+      if (!this.audioErorr) {
+        const data = await UploadAPI.uploadFile(res.file)
+        this.formSubmit.link = data.filename
+      }
+      this.loadingUploadAudio = false
+      return Promise.resolve()
+    },
   }
 }
 </script>
