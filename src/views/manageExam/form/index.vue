@@ -121,7 +121,7 @@
                 >
                   <a-button>
                     <el-icon name="upload2" style="margin-right: 5px"/>
-                    Tải lên file audio
+                    Tải lên file
                   </a-button>
                 </a-upload>
                 <div v-if="audioErorr" style="color:red; margin-left: 20px">{{ audioErorr }}</div>
